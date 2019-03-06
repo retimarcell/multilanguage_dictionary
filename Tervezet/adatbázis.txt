@@ -1,0 +1,19 @@
+User:
+    | Felhasználónév | jelszó |
+
+User+szó ID:
+    | Felhasználónév | szó ID |
+
+$Nyelv:
+    | szó ID | szó | haladás |
+
+$Userdata:
+    | Felhasználónév | Összesitett | haladás | type=össz | --> fix első sor
+    | Felhasználónév | nyelv | haladás | type=nyelv |
+    | Felhasználónév | kategória | haladás | type=kategória |
+
+$Kategória:
+    | kategória | szó ID |
+
+$Challenges:
+    | Kihivás | type(heti/napi) | felhasználónév

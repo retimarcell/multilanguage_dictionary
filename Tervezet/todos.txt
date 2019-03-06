@@ -1,0 +1,20 @@
+ - Question Setup as a whole (Questions.py)
+
+ - Main language
+    - Progress should be median of the other words
+
+ - Deactive Header Button when said menuoption is on display
+ + Activate Header Button upon leaving display
+
+ - Doubleclick on selected word in dictionary
+   - Design the process + implementation
+
+ - Category progress bar
+
+ - Login window X'd, close the app
+
+ - AddDictionaryEntry.py --> pushWordsToDatabase
+
+ - Upon changing database, refresh user data!!!
+
+ - After changes confirmed, refresh dictionary

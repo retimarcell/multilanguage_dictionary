@@ -1,0 +1,4 @@
+nemethi.ddns.net
+3306
+marcell_reti
+password
