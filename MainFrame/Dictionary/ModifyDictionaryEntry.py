@@ -18,18 +18,19 @@ class ModifyEntryWindow:
         self.confirmButton = None
         self.cancelButton = None
 
-        self.root.mainloop()
-
         self.setupWindow()
         self.placeWidgets()
+
+        self.root.mainloop()
 
     def setupWindow(self):
         self.logObj.simpleLog("Creating Labels and Buttons...")
 
-        for i in range(len(self.tablerow.buttons)):
-            self.labels.append(Label(self.root, text=(self.tablerow.buttons[i]['text'])))
-            self.entries.append(Entry(self.root))
-            self.buttons.append(Button(self.root, text='Megváltoztat', command=lambda: self.changeLabelBasedOnEntry(i)))
+        for i in range(len(self.tableRow.buttons)):
+            textTemp = self.tableRow.getButtonText(i)
+            self.wordLabels.append(Label(self.root, text=textTemp))
+            self.wordNewEntries.append(Entry(self.root))
+            self.wordChangeButtons.append(Button(self.root, text='Megváltoztat', command=lambda x=i: self.changeLabelBasedOnEntry(x)))
 
         self.confirmButton = Button(self.bottomFrame, text='Véglegesités', command=self.confimChanges)
         self.cancelButton = Button(self.bottomFrame, text='Mégse', command=self.cancelChanges)
@@ -52,17 +53,20 @@ class ModifyEntryWindow:
         self.cancelButton.grid(row=0, column=1, sticky=E)
 
     def changeLabelBasedOnEntry(self, index):
-        self.logObj.simpleLog("Changing Label based on entry: [%s] --> [%s]" % (self.wordLabels[index]['text'], self.wordNewEntries[index]['text']))
-        self.wordLabels[index].configure(text=self.wordNewEntries[index]['text'])
+        tempText = self.wordNewEntries[index].get()
+        self.logObj.simpleLog("Changing Label based on entry: [%s] --> [%s]" % (self.wordLabels[index]['text'], tempText))
+        self.wordLabels[index].configure(text=tempText)
         self.wordNewEntries[index].delete(0, END)
+        self.root.update()
 
     def confimChanges(self):
         self.logObj.simpleLog("Updating database with new values...")
 
         if self.confirmChangesPopup():
             for i in range(len(self.tableRow.buttons)):
-                if self.tableRow.buttons[i]['text'] != self.wordNewEntries[i].get():
-                    self.updateWord(i)
+                newValue = self.wordLabels[i].cget('text')
+                if self.tableRow.getButtonText(i) != newValue:
+                    self.updateWord(i, newValue)
 
         self.root.destroy()
 
@@ -81,9 +85,9 @@ class ModifyEntryWindow:
 
         return value
 
-    def updateWord(self, index):
-        previousValue = self.tableRow.buttons[index]['text']
-        newValue = self.wordNewEntries[index].get()
+    def updateWord(self, index, newValue):
+        previousValue = self.tableRow.getButtonText(index)
+
         self.logObj.simpleLog("Updating \"%s\" to \"%s\"" % (previousValue, newValue))
 
         self.user.database.changeWord(self.user.languages[index].language, previousValue, newValue)

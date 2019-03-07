@@ -14,6 +14,7 @@ class Database():
     def executeStatement(self, statement):
         self.logObj.statementLog(statement)
         self.cursor.execute(statement)
+        self.logObj.statementLog("Statement executed.")
 
 
     def checkUsersExists(self, username, password=None):
@@ -73,7 +74,7 @@ class Database():
     def changeWord(self, language, previousValue, newValue):
         self.logObj.simpleLog("Changing word in \"%s\" language" % language)
 
-        statement = "update l_%s set word='%s', progress=%i where word='%s'" % (language, previousValue, 0, newValue)
+        statement = "update l_%s set word='%s', progress=%i where word='%s'" % (language, newValue, 0, previousValue)
 
         self.executeStatement(statement)
 

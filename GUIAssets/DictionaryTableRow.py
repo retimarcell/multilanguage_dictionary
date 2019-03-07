@@ -32,6 +32,10 @@ class TableRow:
             self.buttons[i].bind('<Double-Button-1>', lambda x=i: self.doubleClick(x))
             self.buttons[i].bind('<Button-3>', lambda event, x=rowNum: self.showRightClickOptions(event, x))
 
+    def getButtonText(self, i):
+        self.logObj.simpleLog("Returning table row text: %s" % self.buttons[i].cget('text'))
+        return self.buttons[i].cget('text')
+
     def setProgressColor(self, button, progress):
         if progress < 20:
             button.configure(bg='red', activebackground='red')
