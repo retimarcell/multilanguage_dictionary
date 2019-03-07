@@ -67,4 +67,5 @@ class TableRow:
     def delete(self, rowNum):
         dde.deleteWholeEntry(self.logObj, self.user, self)
         self.root.tableRows.pop(rowNum)
+        self.root.
         self.root.displayTable()

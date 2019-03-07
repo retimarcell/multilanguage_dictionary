@@ -22,13 +22,14 @@ def deleteFromUser(logObj, user, wordID):
 def deleteFromLanguage(logObj, user, language, wordID):
     logObj.simpleLog("Deleting word from language: %s" % language.language)
     language.removeWordID(wordID)
-    user.database.deleteRow("l_" % language.language, ["wordID"], [wordID])
+    user.database.deleteRow("l_%s" % language.language, ["wordID"], [wordID])
 
 
 def deleteFromCategory(logObj, user, category, wordID):
-    logObj.simpleLog("Deleting word from category: %s" % category.category)
-    category.removeWordID(wordID)
-    user.database.deleteRow("Categories", ["wordID"], [wordID])
+    if wordID in category.wordIDs:
+        logObj.simpleLog("Deleting word from category: %s" % category.category)
+        category.removeWordID(wordID)
+        user.database.deleteRow("Categories", ["wordID"], [wordID])
 
 
 def confirmDelete(logObj):

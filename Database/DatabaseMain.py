@@ -81,10 +81,10 @@ class Database():
 
     def deleteRow(self, table, where, what):
         self.logObj.simpleLog("Creating delete statement...")
-        statement = "delete from %s where "
+        statement = "delete from %s where " % table
 
         for i in range(len(where)):
-            statement += "%s=\"%s\" and " % (where[i], what[i])
+            statement += "%s=\"%s\" and " % (where[i], str(what[i]))
         statement = statement[:-5]
 
         self.executeStatement(statement)
