@@ -4,7 +4,6 @@ from tkinter.messagebox import *
 def deleteWholeEntry(logObj, user, tableRow):
     if confirmDelete(logObj):
         wordID = tableRow.wordID
-
         deleteFromUser(logObj, user, wordID)
 
 

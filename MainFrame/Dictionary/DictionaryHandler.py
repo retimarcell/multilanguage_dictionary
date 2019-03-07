@@ -1,6 +1,7 @@
 from tkinter import *
 import math
 from GUIAssets import DictionaryTableRow as dtr
+from MainFrame.Dictionary import AddDictionaryEntry as ade
 
 class DictionaryFrame(Frame):
 
@@ -24,7 +25,10 @@ class DictionaryFrame(Frame):
         self.displayTable(self.pageNumber)
         self.createPageButtons()
 
-    def displayTable(self, section):
+    def displayTable(self, section=None):
+        if section is None:
+            section = self.pageNumber
+
         self.logObj.simpleLog("Displaying Page Number %i." % (self.pageNumber+1))
         i = 15*section
         while i != (15 * (section+1)):
@@ -36,8 +40,8 @@ class DictionaryFrame(Frame):
             i += 1
 
     def createPageButtons(self):
-        self.prevButton = Button(self, text="Előző", command=lambda x=-1:self.changeDisplay(x))
-        self.nextButton = Button(self, text="Következő", command=lambda x=1:self.changeDisplay(x))
+        self.prevButton = Button(self, text="Előző", command=lambda x=-1: self.changeDisplay(x))
+        self.nextButton = Button(self, text="Következő", command=lambda x=1: self.changeDisplay(x))
 
         colnum = len(self.tableRows[0].buttons)
         self.prevButton.grid(row=16, column=colnum-2)
