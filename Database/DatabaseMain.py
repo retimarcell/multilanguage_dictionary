@@ -64,11 +64,15 @@ class Database():
         statement = "insert into %s values (" % table
 
         for value in values:
-            statement += "%s,"
+            if type(value) is int:
+                statement += "%i," % value
+            else:
+                statement += "\"%s\"," % value
 
         statement = statement[:-1] + ")"
 
         self.executeStatement(statement)
+        self.dbConnection.commit()
 
 
     def changeWord(self, language, previousValue, newValue):
@@ -77,6 +81,7 @@ class Database():
         statement = "update l_%s set word='%s', progress=%i where word='%s'" % (language, newValue, 0, previousValue)
 
         self.executeStatement(statement)
+        self.dbConnection.commit()
 
 
     def deleteRow(self, table, where, what):
@@ -88,3 +93,4 @@ class Database():
         statement = statement[:-5]
 
         self.executeStatement(statement)
+        self.dbConnection.commit()

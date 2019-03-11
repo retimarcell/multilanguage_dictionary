@@ -22,6 +22,8 @@ class LoginWindow:
         self.loginButton = Button(self.buttonFrame, text="Login", command=self.login)
         self.registerButton = Button(self.buttonFrame, text='Register', command=self.register)
 
+        self.root.bind('<Return>', self.login)
+
         self.labelUsername.grid(row=0, column=0)
         self.labelPassword.grid(row=1, column=0)
         self.entryUsername.grid(row=0, column=1)
@@ -30,10 +32,11 @@ class LoginWindow:
         self.registerButton.grid(row=0, column=1)
         self.logObj.simpleLog("Frame set.")
 
+        self.root.focus_force()
+        self.entryUsername.focus()
         self.root.mainloop()
 
-
-    def login(self):
+    def login(self, event=None):
         self.logObj.simpleLog("Attempt to login...")
         self.logObj.simpleLog("Logging in with \"%s\"" % self.entryUsername.get())
 

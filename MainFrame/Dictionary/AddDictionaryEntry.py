@@ -1,55 +1,72 @@
 from tkinter import *
+from tkinter.messagebox import *
 
 
-def addNewWord(logObj, user):
-    logObj.simpleLog("Generating word addition window...")
-    temp = IntVar()
-    addedWords = []
+class AddEntry:
 
-    root = Tk()
+    def __init__(self, logObj, user):
+        self.logObj = logObj
+        self.logObj.simpleLog("Generating word addition window...")
 
-    label = Label(root)
-    entry = Entry(root, width=20)
-    button = Button(root, text="OK", command=lambda temp=temp: confirmEntry(temp))
+        self.user = user
+        self.addedWords = []
+        self.counter = 0
 
-    label.grid(row=0, sticky=W)
-    entry.grid(row=1)
-    button.grid(row=2, sticky=E)
+        self.root = Tk()
 
-    root.mainloop()
+        self.label = Label(self.root, text="%s:" % self.user.languages[0].language)
+        self.entry = Entry(self.root, width=20)
+        self.forwardButton = Button(self.root, text="OK", command=self.play)
+        self.cancelButton = Button(self.root, text="Mégse", command=self.cancelAddition)
 
-    for language in user.languages:
-        logObj.simpleLog("Waiting for word addition for language: %s" % language.language)
-        temp.set(0)
-        label.configure(text="%s:" % language.language)
-        while temp != 1:
-            pass
-        addedWords.append(entry.get())
-        logObj.simpleLog("Added \"%s\" for %s" % (addedWords[-1], language.language))
+        self.label.grid(row=0, sticky=W, columnspan=2)
+        self.entry.grid(row=1, columnspan=2)
+        self.cancelButton.grid(row=2, column=1, sticky=E)
+        self.forwardButton.grid(row=2, column=0, sticky=E)
 
-    root.destroy()
-    pushNewWordsToDatabase(logObj, user, addedWords)
+        self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[0].language)
 
+        self.root.mainloop()
 
-def pushNewWordsToDatabase(logObj, user, addedWords):
-    logObj.simpleLog("Adding words to database...")
+    def play(self):
+        temp = self.entry.get()
+        self.addedWords.append(temp)
+        self.logObj.simpleLog("Added \"%s\" for %s" % (temp, self.user.languages[self.counter].language))
 
-    user.database.insertIntoTable("WordID", [user.username, len(user.wordIDs) + 1])
+        if (self.counter + 1) != len(self.user.languages):
+            self.counter += 1
+            self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[self.counter].language)
+            self.label['text'] = "%s:" % self.user.languages[self.counter].language
+            self.entry.delete(0, END)
+        else:
+            self.logObj.simpleLog("Words gathered.")
+            self.pushNewWordsToDatabase()
 
-    for i in range(len(addedWords)):
-        createValuesForInsertAndSend(logObj, user, addedWords[i], i)
+            self.logObj.simpleLog("Word addition finished.")
+            showinfo("Siker!", "Sikeresen hozzáadva!")
 
+            self.root.destroy()
 
-def createValuesForInsertAndSend(logObj, user, newWord, index):
-    tableName = "l_" + user.languages[index].language
-    logObj.simpleLog("Adding \"%s\" to \"%s\" database..." % (newWord, tableName))
-    values = []
-    values.append(len(user.wordIDs) + 1)
-    values.append(newWord)
-    values.append(0)
+    def pushNewWordsToDatabase(self):
+        self.logObj.simpleLog("Adding words to database...")
 
-    user.database.insertIntoTable(tableName, values)
+        self.user.database.insertIntoTable("WordID", [self.user.username, len(self.user.wordIDs) + 1])
 
+        for i in range(len(self.addedWords)):
+            self.createValuesForInsertAndSend(self.addedWords[i], i)
 
-def confirmEntry(x):
-    x.set(1)
+    def createValuesForInsertAndSend(self, newWord, index):
+        tableName = "l_" + self.user.languages[index].language
+        self.logObj.simpleLog("Adding \"%s\" to \"%s\" database..." % (newWord, tableName))
+        values = []
+        values.append(len(self.user.wordIDs) + 1)
+        values.append(newWord)
+        values.append(0)
+
+        self.user.database.insertIntoTable(tableName, values)
+
+    def cancelAddition(self):
+        if askyesno("Megszakítás", "Biztosan megszakítja a hozzáadást?"):
+            self.logObj.simpleLog("Word addition cancelled.")
+            self.root.destroy()
+        self.logObj.simpleLog("Word addition cancel cancelled.")

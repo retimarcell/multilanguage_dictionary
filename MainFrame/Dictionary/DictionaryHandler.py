@@ -40,12 +40,14 @@ class DictionaryFrame(Frame):
             i += 1
 
     def createPageButtons(self):
+        self.addEntryButton = Button(self, text="Új", command=self.addWord)
         self.prevButton = Button(self, text="Előző", command=lambda x=-1: self.changeDisplay(x))
         self.nextButton = Button(self, text="Következő", command=lambda x=1: self.changeDisplay(x))
 
         colnum = len(self.tableRows[0].buttons)
-        self.prevButton.grid(row=16, column=colnum-2)
-        self.nextButton.grid(row=16, column=colnum-1)
+        self.addEntryButton.grid(row=16, column=colnum-2)
+        self.prevButton.grid(row=16, column=colnum-1)
+        self.nextButton.grid(row=16, column=colnum)
 
     def changeDisplay(self, changeNum):
         if not (changeNum == -1 and self.pageNumber == 0) or not (changeNum == 1 and self.pageNumber == self.maxPageNumber):
@@ -54,3 +56,6 @@ class DictionaryFrame(Frame):
             self.displayTable(self.pageNumber)
         else:
             self.logObj.simpleLog("Button not changing display on purpose")
+
+    def addWord(self):
+        ADE = ade.AddEntry(self.logObj, self.user)
