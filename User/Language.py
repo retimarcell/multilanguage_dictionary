@@ -20,6 +20,12 @@ class Language:
                 return [self.language, self.words[i]]
         return None
 
+    def getWord(self, wordID):
+        for i in range(len(self.wordIDs)):
+            if self.wordIDs[i] == wordID:
+                return self.words[i]
+        return [" - "]
+
     def getWordAndProgress(self, wordID):
         for i in range(len(self.wordIDs)):
             if self.wordIDs[i] == wordID:

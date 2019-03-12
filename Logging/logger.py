@@ -46,3 +46,16 @@ class Logger:
         else:
             msg += " {EMPTY}"
         self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S ") + msg + "\n")
+
+    def questionLog(self, wordID, sLang, aLang, sWord, aWord):
+        self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S Question object: "))
+        self.printDivider()
+        self.logFile.write("WordID:\t%s" % wordID)
+        self.logFile.write("Source language:\t%s" % sLang)
+        self.logFile.write("Answer language:\t%s" % aLang)
+        self.logFile.write("Source word:\t%s" % sWord)
+        self.logFile.write("Answer word:\t%s" % aWord)
+        self.printDivider()
+
+    def printDivider(self):
+        self.logFile.write("=============================================")

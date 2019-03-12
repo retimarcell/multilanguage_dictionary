@@ -39,15 +39,18 @@ def getRandomLanguage(logObj, languages, sourceLang, userLanguages):
 def getRandomAnswerWord(logObj, wordIDs, user, selectedLanguage, eligibleCategories):
     logObj.simplelog("Getting random word")
 
+    copyWordIDs = wordIDs.copy()
     filterCounter = 1
     removableIDs = []
 
-    while True:
-        selectedWordID = random.choice(wordIDs)
+    while len(copyWordIDs) != 0:
+        selectedWordID = random.choice(copyWordIDs)
 
         wordAndProgress = getWordAndProgressFromLanguage(logObj, user, selectedLanguage, selectedWordID)
         if wordAndProgress[0] == "Failed" and str(wordAndProgress[1]) == "":
             logObj.simplelog("Failed with the wordID: %i" % selectedWordID)
+            copyWordIDs.remove(selectedWordID)
+            removableIDs.remove(selectedWordID)
             continue
         else:
             logObj.simplelog("Gotten the following word and progress: [%s | %i]" % (wordAndProgress[0], wordAndProgress[1]))
@@ -65,10 +68,13 @@ def getRandomAnswerWord(logObj, wordIDs, user, selectedLanguage, eligibleCategor
             logObj.simplelog("Category check passed.")
         else:
             logObj.simplelog("Category check failed.")
+            copyWordIDs.remove(selectedWordID)
             removableIDs.append(selectedWordID)
             continue
 
         return [wordAndProgress[0], selectedWordID, removableIDs]
+
+    return [" - ", -1, removableIDs]
 
 
 def getWordAndProgressFromLanguage(logObj, user, lang, wordID):
@@ -105,3 +111,37 @@ def wordIDInCategoryCheck(logObj, userCategories, eligibleCategories, wordID):
             if category.getWordIDIndex(wordID) != None:
                 return True
     return False
+
+
+def getSourceWord(logObj, languages, sourceLang, wordID):
+    logObj.simplelog("Getting the source word.")
+
+    if sourceLang == " - ":
+        while True:
+            randomLang = random.choice(languages)
+            arrTemp = createReturnArrayForSourceWord(logObj, randomLang, wordID)
+            return arrTemp
+
+    for lang in languages:
+        if lang.language == sourceLang:
+            arrTemp = createReturnArrayForSourceWord(logObj, lang, wordID)
+
+    return [" - ", None, False]
+
+def createReturnArrayForSourceWord(logObj, languageObj, wordID):
+    logObj.simplelog("Creating returnable array for source word")
+
+    returnArray = []
+
+    returnWord = languageObj.getWord(wordID)
+    returnArray.append(returnWord)
+    returnArray.append(languageObj.language)
+
+    if returnWord == " - " or returnWord is None:
+        logObj.simplelog("No word is found in source word")
+        returnArray.append(False)
+    else:
+        logObj.simplelog("Found word: %s" % returnWord)
+        returnArray.append(True)
+
+    return returnArray
