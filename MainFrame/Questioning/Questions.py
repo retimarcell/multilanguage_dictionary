@@ -1,30 +1,31 @@
 import random
+from MainFrame.Questioning import QuestionEligibilityTestings as QET
 
-class Questions:
+class Question:
 
     def __init__(self):
-        self.wordIDs = []
-        self.labelWords = []
+        self.wordID = ""
+        self.label = ""
         self.answers = []
 
 
-def getQuestions(user, amount, options):
+def getQuestions(logObj, user, amount, options):
     questions = []
-    randomWordIDs = getRandomizedWordIDs(user.wordIDs)
-    fillQuestions(questions, randomWordIDs, amount, options, user)
+    randomWordIDs = QET.getRandomizedWordIDs(logObj, user.wordIDs)
+    fillQuestions(logObj, questions, randomWordIDs, amount, options, user)
     return questions
 
 
-def getRandomizedWordIDs(array):
-    returnArray = array.copy()
-    random.shuffle(returnArray)
-    return returnArray
+def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
+    logObj.simplelog("Starting Question creation.")
+    for i in range(amount):
+        if QET.isWordIDsEmpty(randomWordIDs):
+            logObj.simplelog("Questions couldn't be filled by the required amount, since there is no more available WordID.")
+            break
+        else:
+            optionsFailed = False
 
-
-def fillQuestions(questions, wordIDs, amount, options, user):
-    for wordID in wordIDs:
-        pass
-
-
-def isCorrespondingOptions(wordID, options, user):
-    pass
+            while True:
+                selectedLanguage = QET.getRandomLanguage(logObj, options.languages, options.source, user.languages)
+                answerWord, selectedWordID, removableIDs = QET.getRandomAnswerWord(logObj, randomWordIDs, user, selectedLanguage, options.categories)
+                # sourceWord = QET.getSourceWord(logObj, user.languages, options.source, )

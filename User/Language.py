@@ -37,3 +37,8 @@ class Language:
         self.wordIDs.pop(index)
         self.words.pop(index)
         self.progresses.pop(index)
+
+    def containsWordID(self, wordID):
+        if wordID in self.wordIDs:
+            return True
+        return False

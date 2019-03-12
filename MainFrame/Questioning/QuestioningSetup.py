@@ -37,5 +37,6 @@ class QuestioningSetupFrame(Frame):
         setupOptions = so.SetupOptions()
         setupOptions.languages = self.languageDropdown.getSelectedOptions()
         setupOptions.categories = self.categoryDropdown.getSelectedOptions()
+        setupOptions.source = self.sourceLanguageDropdown.getSelectedOption()
         setupOptions.mode = self.modeDropdown.getSelectedOption()
         return setupOptions

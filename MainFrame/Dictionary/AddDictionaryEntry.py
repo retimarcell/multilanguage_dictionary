@@ -26,9 +26,13 @@ class AddEntry:
 
         self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[0].language)
 
+        self.root.focus_force()
+        self.entry.focus()
+        self.root.bind('<Return>', self.play)
+
         self.root.mainloop()
 
-    def play(self):
+    def play(self, event=None):
         temp = self.entry.get()
         self.addedWords.append(temp)
         self.logObj.simpleLog("Added \"%s\" for %s" % (temp, self.user.languages[self.counter].language))

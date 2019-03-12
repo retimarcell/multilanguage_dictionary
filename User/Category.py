@@ -12,3 +12,8 @@ class Category:
 
     def removeWordID(self, wordID):
         self.wordIDs.remove(wordID)
+
+    def getWordIDIndex(self, wordID):
+        if wordID in self.wordIDs:
+            return self.wordIDs.index(wordID)
+        return None

@@ -16,8 +16,6 @@ class DictionaryFrame(Frame):
         self.tableHeader = dtr.TableHeader(self.logObj, self.user, self)
 
         self.tableRows = []
-        for i in range(15):
-            self.tableRows.append(None)
 
         self.pageNumber = 0
         self.maxPageNumber = int(len(self.user.wordIDs) / 15)
@@ -28,6 +26,8 @@ class DictionaryFrame(Frame):
     def displayTable(self, section=None):
         if section is None:
             section = self.pageNumber
+
+        self.emptyListToNones()
 
         self.logObj.simpleLog("Displaying Page Number %i." % (self.pageNumber+1))
         i = 15*section
@@ -59,3 +59,9 @@ class DictionaryFrame(Frame):
 
     def addWord(self):
         ADE = ade.AddEntry(self.logObj, self.user)
+        self.displayTable()
+
+    def emptyListToNones(self):
+        self.tableRows = []
+        for i in range(15):
+            self.tableRows.append(None)

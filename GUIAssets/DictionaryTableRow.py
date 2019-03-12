@@ -68,3 +68,7 @@ class TableRow:
         dde.deleteWholeEntry(self.logObj, self.user, self)
         self.root.tableRows.pop(rowNum)
         self.root.displayTable()
+
+    def destroyButtons(self):
+        for button in self.buttons:
+            button.destroy()
