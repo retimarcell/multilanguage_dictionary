@@ -125,8 +125,10 @@ def getSourceWord(logObj, languages, sourceLang, wordID):
     for lang in languages:
         if lang.language == sourceLang:
             arrTemp = createReturnArrayForSourceWord(logObj, lang, wordID)
+            return arrTemp
 
     return [" - ", None, False]
+
 
 def createReturnArrayForSourceWord(logObj, languageObj, wordID):
     logObj.simplelog("Creating returnable array for source word")

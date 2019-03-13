@@ -1,6 +1,7 @@
 from tkinter import *
 from GUIAssets import QuestioningSetupDropdown as qsd
-from MainFrame.Questioning import SetupOptions as so
+from MainFrame.Questioning.Objects import SetupOptions as so
+
 
 class QuestioningSetupFrame(Frame):
 

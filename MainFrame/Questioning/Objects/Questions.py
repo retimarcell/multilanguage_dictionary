@@ -1,14 +1,15 @@
 import random
 from MainFrame.Questioning import QuestionEligibilityTestings as QET
 
+
 class Question:
 
     def __init__(self, wordID, sLang, aLang, sWord, aWord):
-        self.wordID = wordID
-        self.sourceLang = sLang
-        self.answerLang = aLang
-        self.label = sWord
-        self.answer = aWord
+        self.wordID =       wordID
+        self.sourceLang =   sLang
+        self.answerLang =   aLang
+        self.label =        sWord
+        self.answer =       aWord
 
 
 def getQuestions(logObj, user, amount, options):
