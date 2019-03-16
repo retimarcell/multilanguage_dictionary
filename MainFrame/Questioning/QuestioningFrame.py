@@ -11,6 +11,7 @@ class QuestioningFrame(Frame):
         self.options = setupOptions
         self.user = user
         self.root = root
+        self.isStart = True
 
         Frame.__init__(self, master=self.root)
         self.grid()
@@ -23,8 +24,9 @@ class QuestioningFrame(Frame):
         self.answers = []
 
         self.createFrames()
+        self.root.bind('<Return>', self.play)
 
-        self.play(True)
+        self.play()
 
     def getAmount(self):
         if self.options.mode == "Normál":
@@ -48,7 +50,7 @@ class QuestioningFrame(Frame):
 
     def setupButtons(self):
         self.nextButton = Button(self.leftFrame, text='Következő', command=self.play)
-        self.nextButton.grid(row=1)
+        self.nextButton.grid(row=2, column=1)
 
     def configureLeftFrame(self):
         self.questionsLeftLabel = Label(self.rightFrame)
@@ -57,19 +59,21 @@ class QuestioningFrame(Frame):
         self.questionsLeftLabel.grid(row=0)
         self.questionsAnsweredLabel.grid(row=1)
 
-    def play(self, isStart=False):
+    def play(self, event=None):
 
-        if not isStart:
+        if not self.isStart:
             self.analyzeAnswer()
             self.currentQuestion += 1
             self.questionObject.destroy()
             self.questionObject = None
+        else:
+            self.isStart = False
 
         self.questionsLeftLabel.config(text='Kérdések: %i/%i' % (self.currentQuestion + 1, len(self.questions)))
         self.questionsAnsweredLabel.config(text='Jól megválaszolt kérdések: %i/%i' % (self.rightAnswers, self.currentQuestion))
 
         if self.currentQuestion < len(self.questions):
-            self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].label)
+            self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label)
         else:
             self.finalizeQuestioning()
 

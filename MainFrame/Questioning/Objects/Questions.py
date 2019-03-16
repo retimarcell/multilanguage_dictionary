@@ -39,15 +39,14 @@ def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
                 sourceWord, sourceLang, isSuccesful = QET.getSourceWord(logObj, user.languages, options.source, selectedWordID)
 
                 removeWordIDs(logObj, None, removableIDs, randomWordIDs)
+                removeWordIDs(logObj, selectedWordID, None, randomWordIDs)
 
                 if not isSuccesful:
-                    removeWordIDs(logObj, selectedWordID, None, randomWordIDs)
                     continue
 
                 logObj.simpleLog("Creating question!")
                 logObj.questionLog(selectedWordID, sourceLang, selectedLanguage, sourceWord, answerWord)
                 questions.append(Question(selectedWordID, sourceLang, selectedLanguage, sourceWord, answerWord))
-                removeWordIDs(logObj, selectedWordID, None, randomWordIDs)
 
 
 def removeWordIDs(logObj, singleID, arrayID, wordIDs):

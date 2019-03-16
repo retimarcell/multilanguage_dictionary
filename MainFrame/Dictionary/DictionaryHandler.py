@@ -15,7 +15,7 @@ class DictionaryFrame(Frame):
 
         self.tableHeader = dtr.TableHeader(self.logObj, self.user, self)
 
-        self.tableRows = []
+        self.tableRows = [None for i in range(15)]
 
         self.pageNumber = 0
         self.maxPageNumber = int(len(self.user.wordIDs) / 15)
@@ -32,10 +32,8 @@ class DictionaryFrame(Frame):
         self.logObj.simpleLog("Displaying Page Number %i." % (self.pageNumber+1))
         i = 15*section
         while i != (15 * (section+1)):
-            rowNum = i % 15
-            if i >= len(self.user.wordIDs):
-                self.tableRows[rowNum] = None
-            else:
+            rowNum = int(i % 15)
+            if i < len(self.user.wordIDs):
                 self.tableRows[rowNum] = dtr.TableRow(self.logObj, self.user.wordIDs[i], self.user, self, rowNum + 1)
             i += 1
 
@@ -50,7 +48,7 @@ class DictionaryFrame(Frame):
         self.nextButton.grid(row=16, column=colnum)
 
     def changeDisplay(self, changeNum):
-        if not (changeNum == -1 and self.pageNumber == 0) or not (changeNum == 1 and self.pageNumber == self.maxPageNumber):
+        if (changeNum != -1 or self.pageNumber != 0) or (changeNum != 1 or self.pageNumber != self.maxPageNumber):
             self.logObj.simpleLog("Changing displayed words in table...")
             self.pageNumber += changeNum
             self.displayTable(self.pageNumber)
@@ -62,6 +60,9 @@ class DictionaryFrame(Frame):
         self.displayTable()
 
     def emptyListToNones(self):
-        self.tableRows = []
-        for i in range(15):
-            self.tableRows.append(None)
+        for ele in self.tableRows:
+            if ele is not None:
+                try:
+                    ele.destroy()
+                except:
+                    pass

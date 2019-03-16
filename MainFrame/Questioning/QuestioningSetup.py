@@ -35,9 +35,9 @@ class QuestioningSetupFrame(Frame):
         self.modeDropdown = qsd.QuestioningOptionMenu(self.logObj, self, "mode", self.user, 3, 1)
 
     def getSetup(self):
-        setupOptions = so.SetupOptions()
-        setupOptions.languages = self.languageDropdown.getSelectedOptions()
-        setupOptions.categories = self.categoryDropdown.getSelectedOptions()
-        setupOptions.source = self.sourceLanguageDropdown.getSelectedOption()
-        setupOptions.mode = self.modeDropdown.getSelectedOption()
+        lang = self.languageDropdown.getSelectedOptions()
+        cat = self.categoryDropdown.getSelectedOptions()
+        source = self.sourceLanguageDropdown.getSelectedOption()
+        mode = self.modeDropdown.getSelectedOption()
+        setupOptions = so.SetupOptions(self.logObj, lang, cat, source, mode)
         return setupOptions

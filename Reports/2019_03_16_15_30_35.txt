@@ -1,0 +1,18 @@
+0. szó [Helyes]
+Kérdezett szó: table (angol)
+Várt szó: asztal (magyar)
+Beadott szó: asztal
+
+=============================================
+
+1. szó [Helyes]
+Kérdezett szó: dog (angol)
+Várt szó: kutya (magyar)
+Beadott szó: kutya
+
+=============================================
+
+2. szó [Rossz]
+Kérdezett szó: cat (angol)
+Várt szó: macska (magyar)
+Beadott szó: macseb

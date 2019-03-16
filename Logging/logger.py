@@ -55,6 +55,15 @@ class Logger:
             msg += " {EMPTY}"
         self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S ") + msg + "\n")
 
+    def setupLog(self, lang, cat, source, mode):
+        self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S Options: \n"))
+        printDivider(self.logFile)
+        self.arrayItemsLog("Languages: ", lang)
+        self.arrayItemsLog("Categories: ", cat)
+        self.logFile.write("Source language: %s\n" % source)
+        self.logFile.write("Mode: %s\n" % mode)
+        printDivider(self.logFile)
+
     def questionLog(self, wordID, sLang, aLang, sWord, aWord):
         self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S Question object: \n"))
         printDivider(self.logFile)
