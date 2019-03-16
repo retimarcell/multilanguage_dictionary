@@ -2,13 +2,21 @@ import datetime
 import os
 import sys
 
+
 class Logger:
 
     def __init__(self):
         self.name = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + "log.log"
-        self.logPath = os.getcwd() + "//LOGS//" + self.name
-        if not os.path.exists(os.getcwd() + "//LOGS"):
-            os.makedirs(os.getcwd() + "//LOGS")
+        self.currDir = os.getcwd()
+        self.logPath = self.currDir + "//LOGS//" + self.name
+        self.reportPath = self.currDir + "//Reports//"
+
+        if not os.path.exists(self.currDir + "//LOGS"):
+            os.makedirs(self.currDir + "//LOGS")
+
+        if not os.path.exists(self.currDir + "//Reports"):
+            os.makedirs(self.currDir + "//Reports")
+
         self.logFile = open(self.logPath, 'w')
         self.simpleLog("Logger initialized")
 
@@ -48,14 +56,40 @@ class Logger:
         self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S ") + msg + "\n")
 
     def questionLog(self, wordID, sLang, aLang, sWord, aWord):
-        self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S Question object: "))
-        self.printDivider()
-        self.logFile.write("WordID:\t%s" % wordID)
-        self.logFile.write("Source language:\t%s" % sLang)
-        self.logFile.write("Answer language:\t%s" % aLang)
-        self.logFile.write("Source word:\t%s" % sWord)
-        self.logFile.write("Answer word:\t%s" % aWord)
-        self.printDivider()
+        self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S Question object: \n"))
+        printDivider(self.logFile)
+        self.logFile.write("WordID:\t%s\n" % wordID)
+        self.logFile.write("Source language:\t%s\n" % sLang)
+        self.logFile.write("Answer language:\t%s\n" % aLang)
+        self.logFile.write("Source word:\t%s\n" % sWord)
+        self.logFile.write("Answer word:\t%s\n" % aWord)
+        printDivider(self.logFile)
 
-    def printDivider(self):
-        self.logFile.write("=============================================")
+    def createQuestioningReport(self, answerArr):
+        temp = self.reportPath + datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + ".txt"
+        reportFile = open(temp, 'w')
+
+        for i in range(len(answerArr)):
+            isLast = i + 1 == len(answerArr)
+
+            attachAnswer(reportFile, answerArr[i], i, isLast)
+
+
+def attachAnswer(reportFile, answer, index, isLast):
+
+    if answer.progress != -1:
+        reportFile.write("%i. szó [Helyes]\n" % index)
+    else:
+        reportFile.write("%i. szó [Rossz]\n" % index)
+    reportFile.write("Kérdezett szó: %s (%s)\n" % (answer.label, answer.sourceLang))
+    reportFile.write("Várt szó: %s (%s)\n" % (answer.answer, answer.answerLang))
+    reportFile.write("Beadott szó: %s\n" % answer.givenAnswer)
+
+    if not isLast:
+        printDivider(reportFile)
+
+
+def printDivider(logf):
+    logf.write("\n")
+    logf.write("=============================================\n")
+    logf.write("\n")

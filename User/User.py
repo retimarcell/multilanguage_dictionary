@@ -1,6 +1,7 @@
 from User import Language
 from User import Category
 
+
 class User:
     def __init__(self, logobj, user, database):
         self.logObj = logobj
@@ -10,6 +11,7 @@ class User:
         self.languages = []
         self.wordIDs = []
         self.categories = []
+        self.lastAnswers = []
 
         self.fillLanguages()
         self.fillWordIDs()
@@ -59,3 +61,15 @@ class User:
             if self.categories[i].category == category:
                 return i
         return None
+
+    def saveProgress(self):
+        for answer in self.lastAnswers:
+            for lang in self.languages:
+                if lang.language == answer.answerLang:
+                    if lang.updateWordProgress(answer.wordID, answer.progress):
+                        self.database.updateProgress(lang.language, answer.wordID, lang.getProgressByWordID(answer.wordID))
+        self.calculateProgresses()
+
+    def calculateProgresses(self):
+        # TODO
+        pass

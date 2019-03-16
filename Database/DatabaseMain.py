@@ -83,7 +83,6 @@ class Database():
         self.executeStatement(statement)
         self.dbConnection.commit()
 
-
     def deleteRow(self, table, where, what):
         self.logObj.simpleLog("Creating delete statement...")
         statement = "delete from %s where " % table
@@ -91,6 +90,13 @@ class Database():
         for i in range(len(where)):
             statement += "%s=\"%s\" and " % (where[i], str(what[i]))
         statement = statement[:-5]
+
+        self.executeStatement(statement)
+        self.dbConnection.commit()
+
+    def updateProgress(self, table, wordID, progress):
+        self.logObj.simpleLog("Creating update statement for progress")
+        statement = "update l_%s set progress=%i where wordID=%i" % (table, progress, wordID)
 
         self.executeStatement(statement)
         self.dbConnection.commit()

@@ -10,13 +10,15 @@ class QuestioningFrame(Frame):
         self.logObj.simpleLog("Creating Questioning Frame...")
         self.options = setupOptions
         self.user = user
+        self.root = root
 
-        Frame.__init__(self, master=root)
+        Frame.__init__(self, master=self.root)
         self.grid()
 
         self.amountOf = self.getAmount()
         self.questions = Questions.getQuestions(logObj, self.user, self.amountOf, self.options)
         self.currentQuestion = 0
+        self.rightAnswers = 0
         self.questionObject = None
         self.answers = []
 
@@ -32,7 +34,7 @@ class QuestioningFrame(Frame):
         return 10
 
     def createFrames(self):
-        self.logObj.simplelog("Creating Frames")
+        self.logObj.simpleLog("Creating Frames")
 
         self.leftFrame = Frame(self)
         self.rightFrame = Frame(self)
@@ -46,10 +48,11 @@ class QuestioningFrame(Frame):
 
     def setupButtons(self):
         self.nextButton = Button(self.leftFrame, text='Következő', command=self.play)
+        self.nextButton.grid(row=1)
 
     def configureLeftFrame(self):
-        self.questionsLeftLabel = Label(self.rightFrame, text='Hátralévő kérdések: ')
-        self.questionsAnsweredLabel = Label(self.rightFrame, text='Jól megválaszolt kérdések: ')
+        self.questionsLeftLabel = Label(self.rightFrame)
+        self.questionsAnsweredLabel = Label(self.rightFrame)
 
         self.questionsLeftLabel.grid(row=0)
         self.questionsAnsweredLabel.grid(row=1)
@@ -57,18 +60,28 @@ class QuestioningFrame(Frame):
     def play(self, isStart=False):
 
         if not isStart:
-            self.analizeAnswer()
+            self.analyzeAnswer()
             self.currentQuestion += 1
+            self.questionObject.destroy()
+            self.questionObject = None
+
+        self.questionsLeftLabel.config(text='Kérdések: %i/%i' % (self.currentQuestion + 1, len(self.questions)))
+        self.questionsAnsweredLabel.config(text='Jól megválaszolt kérdések: %i/%i' % (self.rightAnswers, self.currentQuestion))
 
         if self.currentQuestion < len(self.questions):
-            self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion])
+            self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].label)
         else:
             self.finalizeQuestioning()
 
-    def analizeAnswer(self):
+    def analyzeAnswer(self):
         givenAnswer = self.questionObject.getEntry()
-        tempAnswerObj = Answer.Answer(self.questions[self.currentQuestion], givenAnswer)
+        tempAnswerObj = Answer.Answer(self.logObj, self.questions[self.currentQuestion], givenAnswer)
         self.answers.append(tempAnswerObj)
+        if givenAnswer == self.questions[self.currentQuestion].answer:
+            self.rightAnswers += 1
 
     def finalizeQuestioning(self):
-        pass
+        self.logObj.createQuestioningReport(self.answers)
+
+        self.user.lastAnswers = self.answers.copy()
+        self.root.finishQuestioning()

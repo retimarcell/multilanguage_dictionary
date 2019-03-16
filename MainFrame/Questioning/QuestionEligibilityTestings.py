@@ -2,7 +2,7 @@ import random
 
 
 def getRandomizedWordIDs(logObj, array):
-    logObj.simplelog("Creating randomized WordID array")
+    logObj.simpleLog("Creating randomized WordID array")
     returnArray = array.copy()
     random.shuffle(returnArray)
     return returnArray
@@ -15,7 +15,7 @@ def isWordIDsEmpty(wordIDs):
 
 
 def getRandomLanguage(logObj, languages, sourceLang, userLanguages):
-    logObj.simplelog("Getting random language which is not the source language. [%s]" % sourceLang)
+    logObj.simpleLog("Getting random language which is not the source language. [%s]" % sourceLang)
     selectedLang = ""
     searchedLanguageArray = []
 
@@ -28,16 +28,16 @@ def getRandomLanguage(logObj, languages, sourceLang, userLanguages):
     while True:
         selectedLang = random.choice(searchedLanguageArray)
 
-        logObj.simplelog("Dummychecking if source language is in selected languages...")
+        logObj.simpleLog("Dummychecking if source language is in selected languages...")
         if selectedLang != sourceLang:
-            logObj.simplelog("Selected language: %s" % selectedLang)
+            logObj.simpleLog("Selected language: %s" % selectedLang)
             return selectedLang
 
-        logObj.simplelog("Dummy check failed!")
+        logObj.simpleLog("Dummy check failed!")
 
 
 def getRandomAnswerWord(logObj, wordIDs, user, selectedLanguage, eligibleCategories):
-    logObj.simplelog("Getting random word")
+    logObj.simpleLog("Getting random word")
 
     copyWordIDs = wordIDs.copy()
     filterCounter = 1
@@ -48,26 +48,26 @@ def getRandomAnswerWord(logObj, wordIDs, user, selectedLanguage, eligibleCategor
 
         wordAndProgress = getWordAndProgressFromLanguage(logObj, user, selectedLanguage, selectedWordID)
         if wordAndProgress[0] == "Failed" and str(wordAndProgress[1]) == "":
-            logObj.simplelog("Failed with the wordID: %i" % selectedWordID)
+            logObj.simpleLog("Failed with the wordID: %i" % selectedWordID)
             copyWordIDs.remove(selectedWordID)
             removableIDs.remove(selectedWordID)
             continue
         else:
-            logObj.simplelog("Gotten the following word and progress: [%s | %i]" % (wordAndProgress[0], wordAndProgress[1]))
+            logObj.simpleLog("Gotten the following word and progress: [%s | %i]" % (wordAndProgress[0], wordAndProgress[1]))
 
         isPassed = progressFilter(logObj, wordAndProgress[1], filterCounter)
         if isPassed:
-            logObj.simplelog("Progress filter check passed.")
+            logObj.simpleLog("Progress filter check passed.")
         else:
-            logObj.simplelog("Progress filter failed! Try: %i" % filterCounter)
+            logObj.simpleLog("Progress filter failed! Try: %i" % filterCounter)
             filterCounter += 1
             continue
 
         isWordIDInCategory = wordIDInCategoryCheck(logObj, user.categories, eligibleCategories, selectedWordID)
         if isWordIDInCategory:
-            logObj.simplelog("Category check passed.")
+            logObj.simpleLog("Category check passed.")
         else:
-            logObj.simplelog("Category check failed.")
+            logObj.simpleLog("Category check failed.")
             copyWordIDs.remove(selectedWordID)
             removableIDs.append(selectedWordID)
             continue
@@ -89,32 +89,32 @@ def getWordAndProgressFromLanguage(logObj, user, lang, wordID):
 
 def progressFilter(logObj, progress, counter):
     randInt = random.randint(1, 10)
-    logObj.simplelog("Progress filtering in progress with random number and progress: %i | %i" % (randInt, progress))
+    logObj.simpleLog("Progress filtering in progress with random number and progress: %i | %i" % (randInt, progress))
 
     if (randInt <= 5 and progress <= 20) or (5 < randInt <= 8 and 20 < progress <= 40) or (8 < randInt and 40 < progress):
         return True
     elif counter == 6:
-        logObj.simplelog("Passing because of counter")
+        logObj.simpleLog("Passing because of counter")
         return True
     return False
 
 
 def wordIDInCategoryCheck(logObj, userCategories, eligibleCategories, wordID):
-    logObj.simplelog("Checking if wordID in selected categories")
+    logObj.simpleLog("Checking if wordID in selected categories")
 
     if len(eligibleCategories) == 0:
-        logObj.simplelog("Eligible Category list is empty, returning True")
+        logObj.simpleLog("Eligible Category list is empty, returning True")
         return True
 
     for category in userCategories:
         if category.category in eligibleCategories:
-            if category.getWordIDIndex(wordID) != None:
+            if category.getWordIDIndex(wordID) is not None:
                 return True
     return False
 
 
 def getSourceWord(logObj, languages, sourceLang, wordID):
-    logObj.simplelog("Getting the source word.")
+    logObj.simpleLog("Getting the source word.")
 
     if sourceLang == " - ":
         while True:
@@ -131,7 +131,7 @@ def getSourceWord(logObj, languages, sourceLang, wordID):
 
 
 def createReturnArrayForSourceWord(logObj, languageObj, wordID):
-    logObj.simplelog("Creating returnable array for source word")
+    logObj.simpleLog("Creating returnable array for source word")
 
     returnArray = []
 
@@ -140,10 +140,10 @@ def createReturnArrayForSourceWord(logObj, languageObj, wordID):
     returnArray.append(languageObj.language)
 
     if returnWord == " - " or returnWord is None:
-        logObj.simplelog("No word is found in source word")
+        logObj.simpleLog("No word is found in source word")
         returnArray.append(False)
     else:
-        logObj.simplelog("Found word: %s" % returnWord)
+        logObj.simpleLog("Found word: %s" % returnWord)
         returnArray.append(True)
 
     return returnArray

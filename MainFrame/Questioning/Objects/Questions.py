@@ -20,10 +20,10 @@ def getQuestions(logObj, user, amount, options):
 
 
 def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
-    logObj.simplelog("Starting Question creation.")
+    logObj.simpleLog("Starting Question creation.")
     for i in range(amount):
         if QET.isWordIDsEmpty(randomWordIDs):
-            logObj.simplelog("Questions couldn't be filled by the required amount, since there is no more available WordID.")
+            logObj.simpleLog("Questions couldn't be filled by the required amount, since there is no more available WordID.")
             break
         else:
             optionsFailed = False
@@ -44,24 +44,25 @@ def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
                     removeWordIDs(logObj, selectedWordID, None, randomWordIDs)
                     continue
 
-                logObj.simplelog("Creating question!")
+                logObj.simpleLog("Creating question!")
                 logObj.questionLog(selectedWordID, sourceLang, selectedLanguage, sourceWord, answerWord)
                 questions.append(Question(selectedWordID, sourceLang, selectedLanguage, sourceWord, answerWord))
+                removeWordIDs(logObj, selectedWordID, None, randomWordIDs)
 
 
 def removeWordIDs(logObj, singleID, arrayID, wordIDs):
-    logObj.simplelog("Removing unwanted wordIDs from randomized array")
+    logObj.simpleLog("Removing unwanted wordIDs from randomized array")
     logObj.arrayItemsLog("Previous word IDs: ", wordIDs)
     if singleID is None:
-        logObj.simplelog("No single ID added")
+        logObj.simpleLog("No single ID added")
     else:
-        logObj.simplelog("Removing: %i" % singleID)
+        logObj.simpleLog("Removing: %i" % singleID)
         wordIDs.remove(singleID)
 
     if arrayID is None:
-        logObj.simplelog("No ID array added")
+        logObj.simpleLog("No ID array added")
     else:
         for ID in arrayID:
-            logObj.simplelog("Removing: %i" % ID)
+            logObj.simpleLog("Removing: %i" % ID)
             wordIDs.remove(ID)
     logObj.arrayItemsLog("Remaining word IDs: ", wordIDs)

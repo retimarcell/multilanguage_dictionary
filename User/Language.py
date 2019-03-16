@@ -48,3 +48,15 @@ class Language:
         if wordID in self.wordIDs:
             return True
         return False
+
+    def updateWordProgress(self, wordID, amount):
+        index = self.wordIDs.index(wordID)
+
+        if (self.progresses[index] != 0 or amount != -1) and (self.progresses[index] != 60 or amount != 1):
+            self.progresses[index] = self.progresses[index] + amount
+            return True
+        return False
+
+    def getProgressByWordID(self, wordID):
+        index = self.wordIDs.index(wordID)
+        return self.progresses[index]

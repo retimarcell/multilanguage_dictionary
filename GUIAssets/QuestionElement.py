@@ -13,3 +13,7 @@ class QuestionElement:
 
     def getEntry(self):
         return self.entry.get()
+
+    def destroy(self):
+        self.sourceWord.destroy()
+        self.entry.destroy()
