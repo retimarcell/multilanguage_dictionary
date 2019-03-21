@@ -15,4 +15,4 @@ class ReportFrame(Frame):
 
         self.user.saveProgress()
 
-        # TODO
+        # TODO after showing, remove done challenges from user

@@ -6,12 +6,10 @@ from Database import DatabaseMain as dm
 
 if __name__ == '__main__':
     logObj = logger.Logger()
-    try:
-        database = dm.Database(logObj)
 
-        loginWindow = lw.LoginWindow(logObj, database)
-        user = us.User(logObj, loginWindow.user, database, loginWindow.isFirstTime)
+    database = dm.Database(logObj)
 
-        mainWindow = mw.MainWindow(logObj, user, database)
-    except Exception as e:
-        logObj.errorLog(e)
+    loginWindow = lw.LoginWindow(logObj, database)
+    user = us.User(logObj, loginWindow.user, database, loginWindow.isFirstTime)
+
+    mainWindow = mw.MainWindow(logObj, user, database)

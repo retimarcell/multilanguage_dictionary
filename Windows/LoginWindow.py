@@ -53,7 +53,7 @@ class LoginWindow:
             mb.showerror("Failure!", "Incorrect login credentials!")
 
     def handleDate(self):
-        lastLogin = self.db.simpleSelectFromTable("Users", ["username"], [self.user])[0][3]
+        lastLogin = self.db.simpleSelectFromTable("Users", ["username"], [self.user])[0][2]
         date = datetime.datetime.now().strftime("%Y-%m-%d")
 
         self.db.updateLoginTime(self.user, date)

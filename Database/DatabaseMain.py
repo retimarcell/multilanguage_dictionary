@@ -122,6 +122,13 @@ class Database():
         self.dbConnection.commit()
 
 
+    def updateChallenge(self, sL, dL, a, r, rA, user, progress):
+        self.logObj.simpleLog("Creating update statement for challenge progress")
+        statement = "update Challenge_Ongoings set progress=%i where sourceLang='%s' and destinationLang='%s' and amount=%i and reward='%s' and rewardAmount=%i and username='%s'" % (progress, sL, dL, a, r, rA, user)
+
+        self.executeStatement(statement)
+        self.dbConnection.commit()
+
     def getCount(self, table, countArg, where=None, what=None):
         self.logObj.simpleLog("Creating select count(%s) statement for %s" % (countArg, table))
 

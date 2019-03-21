@@ -96,16 +96,31 @@ class User:
         result = self.database.simpleSelectFromTable("Challenge_Ongoings", ["username"], [self.username])
 
         for e in result:
-            self.challenges.append(Challenge.Challenge(e[0], e[1], e[2], int(e[3]), e[4], int(e[5])))
+            self.challenges.append(Challenge.Challenge(e[0], e[1], e[2], int(e[3]), e[4], int(e[5]), int(e[6])))
 
         if isFirstTime and len(self.challenges) != 3:
             result = self.database.simpleSelectFromTable("Challenge_Templates")
-            templates = shuffle(result.copy())
+            templates = result.copy()
+            shuffle(templates)
 
             while len(self.challenges) != 3:
                 if not (len(self.languages) == 0 and (templates[0][1] == 'Y' or templates[0][2] == 'Y')):
-                    self.challenges.append(Challenge.Challenge(templates[0][0], templates[0][1], templates[0][2], int(templates[0][3]), templates[0][4], int(templates[0][5])))
+                    self.challenges.append(Challenge.Challenge(templates[0][0],
+                                                               templates[0][1],
+                                                               templates[0][2],
+                                                               int(templates[0][3]),
+                                                               templates[0][4],
+                                                               int(templates[0][5]),
+                                                               0))
 
+                    self.database.insertIntoTable("Challenge_Ongoings", [self.challenges[-1].description,
+                                                                         self.challenges[-1].sourceLanguage,
+                                                                         self.challenges[-1].destinationLanguage,
+                                                                         self.challenges[-1].amount,
+                                                                         self.challenges[-1].reward,
+                                                                         self.challenges[-1].rewardAmount,
+                                                                         self.challenges[-1].progress,
+                                                                         self.username])
                 templates.pop(0)
 
     def saveProgress(self):
@@ -114,7 +129,28 @@ class User:
                 if lang.language == answer.answerLang:
                     if lang.updateWordProgress(answer.wordID, answer.progress):
                         self.database.updateProgress(lang.language, answer.wordID, lang.getProgressByWordID(answer.wordID))
+
+            for challenge in self.challenges:
+                if challenge.noLanguageRestriction or challenge.sourceLanguage == answer.sourceLang or challenge.destinationLanguage == answer.answerLang:
+                    challenge.progress = challenge.progress + 1
+
+        self.calculateChallenges()
         self.calculateProgresses()
+
+    def calculateChallenges(self):
+        for challenge in self.challenges:
+            if challenge.progress >= challenge.amount:
+                help, amount = challenge.getHelpAndAmount()
+                index = self.getHelpIndex(help)
+                self.helps[index].amount = self.helps[index].amount + amount
+                self.database.updateHelp(self.helps[index].amount, self.helps[index].type, self.username)
+
+                challenge.isDone = True
+                self.database.deleteRow("Challenge_Ongoings",
+                                        ["sourceLang", "destinationLang", "amount", "reward", "rewardAmount", "username"],
+                                        [challenge.sourceLanguage, challenge.destinationLanguage, challenge.amount, challenge.reward, challenge.rewardAmount, self.username])
+            else:
+                self.database.updateChallenge(challenge.sourceLanguage, challenge.destinationLanguage, challenge.amount, challenge.reward, challenge.rewardAmount, self.username, challenge.progress)
 
     def calculateProgresses(self):
         # TODO
