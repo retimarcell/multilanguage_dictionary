@@ -1,5 +1,5 @@
 from User import Language, Category, Help, Challenge
-from random import shuffle
+import random
 
 
 class User:
@@ -101,7 +101,7 @@ class User:
         if isFirstTime and len(self.challenges) != 3:
             result = self.database.simpleSelectFromTable("Challenge_Templates")
             templates = result.copy()
-            shuffle(templates)
+            random.shuffle(templates)
 
             while len(self.challenges) != 3:
                 if not (len(self.languages) == 0 and (templates[0][1] == 'Y' or templates[0][2] == 'Y')):
@@ -112,6 +112,12 @@ class User:
                                                                templates[0][4],
                                                                int(templates[0][5]),
                                                                0))
+                    if self.challenges[-1].sourceLanguage == "Y":
+                        i = random.randint(0, len(self.languages)-1)
+                        self.challenges[-1].sourceLanguage = self.languages[i].language
+                    if self.challenges[-1].destinationLanguage == "Y":
+                        i = random.randint(0, len(self.languages)-1)
+                        self.challenges[-1].destinationLanguage = self.languages[i].language
 
                     self.database.insertIntoTable("Challenge_Ongoings", [self.challenges[-1].description,
                                                                          self.challenges[-1].sourceLanguage,
