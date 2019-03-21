@@ -1,7 +1,8 @@
 from tkinter import *
-import math
 from GUIAssets import DictionaryTableRow as dtr
-from MainFrame.Dictionary import AddDictionaryEntry as ade
+from MainFrame.Dictionary.EntryModifications import AddDictionaryEntry as ade
+from MainFrame.Dictionary.LanguageModifications import AddLanguage as al
+
 
 class DictionaryFrame(Frame):
 
@@ -38,14 +39,22 @@ class DictionaryFrame(Frame):
             i += 1
 
     def createPageButtons(self):
-        self.addEntryButton = Button(self, text="Új", command=self.addWord)
         self.prevButton = Button(self, text="Előző", command=lambda x=-1: self.changeDisplay(x))
         self.nextButton = Button(self, text="Következő", command=lambda x=1: self.changeDisplay(x))
 
         colnum = len(self.tableRows[0].buttons)
-        self.addEntryButton.grid(row=16, column=colnum-2)
         self.prevButton.grid(row=16, column=colnum-1)
         self.nextButton.grid(row=16, column=colnum)
+
+        self.botFrame = Frame(self)
+        self.addEntryButton = Button(self.botFrame, text="Új szó", command=self.addWord)
+        self.addLanguageButton = Button(self.botFrame, text="Új nyelv", command=self.addLanguage)
+        self.addCategoryButton = Button(self.botFrame, text="Új kategória", command=self.addCategory)
+
+        self.botFrame.grid(row=17, columnspan=colnum)
+        self.addEntryButton.grid(row=0, column=0)
+        self.addLanguageButton.grid(row=0, column=1)
+        self.addCategoryButton.grid(row=0, column=2)
 
     def changeDisplay(self, changeNum):
         if (changeNum != -1 or self.pageNumber != 0) or (changeNum != 1 or self.pageNumber != self.maxPageNumber):
@@ -58,6 +67,14 @@ class DictionaryFrame(Frame):
     def addWord(self):
         ADE = ade.AddEntry(self.logObj, self.user)
         self.displayTable()
+
+    def addLanguage(self):
+        AL = al.AddLanguage(self.logObj, self.user)
+        self.tableHeader.refresh()
+        self.displayTable()
+
+    def addCategory(self):
+        pass
 
     def emptyListToNones(self):
         for ele in self.tableRows:

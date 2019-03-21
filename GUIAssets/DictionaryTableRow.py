@@ -1,16 +1,41 @@
 from tkinter import *
-from MainFrame.Dictionary import ModifyDictionaryEntry as mde
-from MainFrame.Dictionary import DeleteDictionaryEntry as dde
+
+from MainFrame.Dictionary.EntryModifications import DeleteDictionaryEntry as dde, ModifyDictionaryEntry as mde
+from MainFrame.Dictionary.LanguageModifications import DeleteLanguage as dl
+
 
 class TableHeader:
 
     def __init__(self, logobj, user, root):
         self.logObj = logobj
         self.logObj.simpleLog("Creating table header row for dictionary")
+        self.user = user
+        self.root = root
 
-        for i in range(len(user.languages)):
-            e = Label(root, text=user.languages[i].language, borderwidth=4, relief="solid", width=20)
+        self.headers = []
+
+        self.refresh()
+
+    def refresh(self):
+        for e in self.headers:
+            e.destroy()
+        for i in range(len(self.user.languages)):
+            e = Label(self.root, text=self.user.languages[i].language, borderwidth=4, relief="solid", width=20)
             e.grid(row=0, column=i)
+            e.bind('<Button-3>', lambda event, x=i: self.handleDelete(event, x))
+            self.headers.append(e)
+
+    def handleDelete(self, event, column):
+        popup = Menu(self.root, tearoff=0)
+        popup.add_command(label='Törlés', command=lambda x=column: self.delete(column))
+        try:
+            popup.tk_popup(event.x_root, event.y_root, 0)
+        finally:
+            popup.grab_release()
+
+    def delete(self, column):
+        dl.deleteLanguage(self.logObj, self.user, self.headers[column].cget('text'))
+        self.root.displayTable()
 
 
 class TableRow:

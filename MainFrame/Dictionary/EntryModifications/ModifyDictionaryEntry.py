@@ -90,6 +90,6 @@ class ModifyEntryWindow:
 
         self.logObj.simpleLog("Updating \"%s\" to \"%s\"" % (previousValue, newValue))
 
-        self.user.database.changeWord(self.user.languages[index].language, previousValue, newValue)
-        self.user.languages[index].changeWord(previousValue, newValue)
+        self.user.database.changeWord(self.user.languages[index].language, previousValue, newValue, self.tableRow.wordID)
+        self.user.languages[index].changeWord(newValue, self.tableRow.wordID)
         self.tableRow.changeButton(index, newValue)

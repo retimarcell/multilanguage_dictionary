@@ -32,8 +32,8 @@ class Language:
                 return [self.words[i], self.progresses[i]]
         return [" - ", -1]
 
-    def changeWord(self, previous, new):
-        index = self.words.index(previous)
+    def changeWord(self, new, wordID):
+        index = self.wordIDs.index(wordID)
         self.progresses[index] = 0
         self.words[index] = new
 
@@ -60,3 +60,8 @@ class Language:
     def getProgressByWordID(self, wordID):
         index = self.wordIDs.index(wordID)
         return self.progresses[index]
+
+    def addWord(self, wordID, word):
+        self.wordIDs.append(wordID)
+        self.words.append(word)
+        self.progresses.append(0)

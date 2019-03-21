@@ -10,7 +10,7 @@ if __name__ == '__main__':
         database = dm.Database(logObj)
 
         loginWindow = lw.LoginWindow(logObj, database)
-        user = us.User(logObj, loginWindow.user, database)
+        user = us.User(logObj, loginWindow.user, database, loginWindow.isFirstTime)
 
         mainWindow = mw.MainWindow(logObj, user, database)
     except Exception as e:

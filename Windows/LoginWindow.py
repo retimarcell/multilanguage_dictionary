@@ -1,5 +1,6 @@
 from tkinter import *
 import tkinter.messagebox as mb
+import datetime
 
 
 class LoginWindow:
@@ -44,12 +45,21 @@ class LoginWindow:
             self.logObj.simpleLog("Login was successful for \"%s\"" % self.entryUsername.get())
             mb.showinfo("Success!", "Welcome %s" % self.entryUsername.get())
             self.user = self.entryUsername.get()
+            self.isFirstTime = self.handleDate()
             self.logObj.simpleLog("Closing the login window...")
             self.root.destroy()
         else:
             self.logObj.simpleLog("Login was NOT successful for \"%s\"" % self.entryUsername.get())
             mb.showerror("Failure!", "Incorrect login credentials!")
 
+    def handleDate(self):
+        lastLogin = self.db.simpleSelectFromTable("Users", ["username"], [self.user])[0][3]
+        date = datetime.datetime.now().strftime("%Y-%m-%d")
+
+        self.db.updateLoginTime(self.user, date)
+        if lastLogin == date:
+            return False
+        return True
 
     def register(self):
         self.clearEntries()
@@ -64,6 +74,7 @@ class LoginWindow:
 
 
     def endRegister(self, value):
+        # TODO create helps in database
         if value == 'R':
             if self.entryUsername.get() == "" or self.entryPassword.get() == "" or self.entryPasswordConfirm.get() == "":
                 self.logObj.simpleLog("Register failed: Missing username/password.")

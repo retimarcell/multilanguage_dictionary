@@ -21,7 +21,6 @@ class MainWindow:
 
         self.root.mainloop()
 
-
     def createRoot(self):
         self.logObj.simpleLog("Creating root")
 
@@ -31,7 +30,6 @@ class MainWindow:
         self.root.geometry("1344x756")
         self.root.columnconfigure((0, 1, 2, 3), weight=1, minsize=336)
         self.logObj.simpleLog("Root created")
-
 
     def createHeaderFrame(self):
         self.logObj.simpleLog("Creating header frame")
@@ -48,12 +46,10 @@ class MainWindow:
 
         self.logObj.simpleLog("Header created")
 
-
     def createMainFrame(self):
         self.mainFrame = Frame(self.root, background="black", width=1344, height=720)
         self.mainFrame.grid(columnspan=4, row=1)
         self.activateFrame(0, True)
-
 
     def activateFrame(self, id, isLaunch=False):
         self.logObj.simpleLog("Frame changing button pushed...")
@@ -71,7 +67,6 @@ class MainWindow:
             self.showedFrame = ph.ProfileFrame(self.logObj, self.mainFrame, self.user)
         else:
             self.logObj.simpleLog("Frame selection failure!")
-
 
     def deactivatePreviousFrame(self):
         self.showedFrame.destroy()

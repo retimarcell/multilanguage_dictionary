@@ -59,6 +59,23 @@ class QuestioningFrame(Frame):
         self.questionsLeftLabel.grid(row=0)
         self.questionsAnsweredLabel.grid(row=1)
 
+        self.helpAmounts = []
+        self.fullWordHelpButton = self.setupHelpButton("FullWord", 0)
+        self.startLetterHelpButton = self.setupHelpButton("StartLetter", 1)
+        self.skipHelpButton = self.setupHelpButton("Skip", 2)
+
+        self.helpButtons = [self.fullWordHelpButton, self.startLetterHelpButton, self.skipHelpButton]
+
+    def setupHelpButton(self, hType, rowC):
+        index = self.user.getHelpIndex(hType)
+        self.helpAmounts.append(self.user.helps[index].amount)
+        btn = Button(self.rightFrame,
+                     text="%s: %i" % (self.user.helps[index].text, self.user.helps[index].amount),
+                     command=lambda x=hType, z=rowC: self.helpActivated(x, z))
+        btn.grid(row=rowC+2)
+
+        return btn
+
     def play(self, event=None):
 
         if not self.isStart:
@@ -76,6 +93,35 @@ class QuestioningFrame(Frame):
             self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label)
         else:
             self.finalizeQuestioning()
+
+    def helpActivated(self, hType, index):
+        if self.helpAmounts[index] != 0:
+
+            remainingAmount = self.removeHelpFromUser(hType, index)
+            prevText = self.helpButtons[index].cget('text').split(':')[0]
+            self.helpButtons[index].configure(text="%s: %i" % (prevText, remainingAmount))
+            self.helpAmounts[index] = self.helpAmounts[index] - 1
+
+            if hType == "FullWord":
+                # TODO progress gain 0
+                self.setEntry(self.questions[self.currentQuestion].answer)
+            elif hType == "StartLetter":
+                self.setEntry(self.questions[self.currentQuestion].answer[0])
+            elif hType == "Skip":
+                # TODO
+                pass
+
+    def removeHelpFromUser(self, hType, buttonIndex):
+        helpIndex = self.user.getHelpIndex(hType)
+        self.user.helps[helpIndex].amount = self.user.helps[helpIndex].amount - 1
+
+        remainingAmount = self.user.helps[helpIndex].amount
+        self.user.database.updateHelp(remainingAmount, hType, self.user.username)
+        return remainingAmount
+
+    def setEntry(self, value):
+        self.questionObject.entry.delete(0, END)
+        self.questionObject.entry.insert(0, value)
 
     def analyzeAnswer(self):
         givenAnswer = self.questionObject.getEntry()

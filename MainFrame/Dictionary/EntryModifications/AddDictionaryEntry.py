@@ -13,13 +13,17 @@ class AddEntry:
         self.counter = 0
 
         self.root = Tk()
+        self.root.resizable(width=FALSE, height=FALSE)
 
-        self.label = Label(self.root, text="%s:" % self.user.languages[0].language)
-        self.entry = Entry(self.root, width=20)
-        self.forwardButton = Button(self.root, text="OK", command=self.play)
-        self.cancelButton = Button(self.root, text="Mégse", command=self.cancelAddition)
+        self.frame = Frame(self.root)
+        self.frame.grid(sticky=W+E+N+S)
 
-        self.label.grid(row=0, sticky=W, columnspan=2)
+        self.label = Label(self.frame, text="%s:" % self.user.languages[0].language)
+        self.entry = Entry(self.frame, width=20)
+        self.forwardButton = Button(self.frame, text="OK", command=self.play)
+        self.cancelButton = Button(self.frame, text="Mégse", command=self.cancelAddition)
+
+        self.label.grid(row=0, sticky=W+E, columnspan=2)
         self.entry.grid(row=1, columnspan=2)
         self.cancelButton.grid(row=2, column=1, sticky=E)
         self.forwardButton.grid(row=2, column=0, sticky=E)
@@ -45,6 +49,7 @@ class AddEntry:
         else:
             self.logObj.simpleLog("Words gathered.")
             self.pushNewWordsToDatabase()
+            self.saveForUser()
 
             self.logObj.simpleLog("Word addition finished.")
             showinfo("Siker!", "Sikeresen hozzáadva!")
@@ -54,7 +59,7 @@ class AddEntry:
     def pushNewWordsToDatabase(self):
         self.logObj.simpleLog("Adding words to database...")
 
-        self.user.database.insertIntoTable("WordID", [self.user.username, len(self.user.wordIDs) + 1])
+        self.user.database.insertIntoTable("WordID", [self.user.username, self.user.database.maxWordID + 1])
 
         for i in range(len(self.addedWords)):
             self.createValuesForInsertAndSend(self.addedWords[i], i)
@@ -68,6 +73,11 @@ class AddEntry:
         values.append(0)
 
         self.user.database.insertIntoTable(tableName, values)
+
+    def saveForUser(self):
+        self.user.wordIDs.append(self.user.database.maxWordID + 1)
+        for i in range(len(self.user.languages)):
+            self.user.languages[i].addWord(self.user.database.maxWordID + 1, self.addedWords[i])
 
     def cancelAddition(self):
         if askyesno("Megszakítás", "Biztosan megszakítja a hozzáadást?"):

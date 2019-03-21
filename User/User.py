@@ -1,9 +1,9 @@
-from User import Language
-from User import Category
+from User import Language, Category, Help, Challenge
+from random import shuffle
 
 
 class User:
-    def __init__(self, logobj, user, database):
+    def __init__(self, logobj, user, database, isFirstTime):
         self.logObj = logobj
         self.logObj.simpleLog("Initializing user: \"%s\"" % user)
         self.username = user
@@ -11,12 +11,17 @@ class User:
         self.languages = []
         self.wordIDs = []
         self.categories = []
+        self.helps = []
+        self.challenges = []
+
         self.lastAnswers = []
 
         self.fillLanguages()
         self.fillWordIDs()
         self.fillWords()
         self.fillCategories()
+        self.fillHelps()
+        self.fillChallenges(isFirstTime)
 
     def fillLanguages(self):
         self.logObj.simpleLog("Filling languages...")
@@ -61,6 +66,47 @@ class User:
             if self.categories[i].category == category:
                 return i
         return None
+
+    def fillHelps(self):
+        self.logObj.simpleLog("Creating help objects...")
+
+        helpsArr = [["Egész szó", "FullWord"], ["Kezdőbetű", "StartLetter"], ["Szó kihagyása", "Skip"]]
+
+        for h in helpsArr:
+            self.helps.append(Help.Help(h[0], h[1]))
+
+        self.fillHelpAmounts()
+
+    def fillHelpAmounts(self):
+        self.logObj.simpleLog("Filling up helps")
+
+        selectResult = self.database.simpleSelectFromTable("Helps", ["username"], [self.username])
+
+        for helpElement in selectResult:
+            index = self.getHelpIndex(helpElement[0])
+
+            self.helps[index].amount = int(helpElement[1])
+
+    def getHelpIndex(self, type):
+        for i in range(len(self.helps)):
+            if self.helps[i].type == type:
+                return i
+
+    def fillChallenges(self, isFirstTime):
+        result = self.database.simpleSelectFromTable("Challenge_Ongoings", ["username"], [self.username])
+
+        for e in result:
+            self.challenges.append(Challenge.Challenge(e[0], e[1], e[2], int(e[3]), e[4], int(e[5])))
+
+        if isFirstTime and len(self.challenges) != 3:
+            result = self.database.simpleSelectFromTable("Challenge_Templates")
+            templates = shuffle(result.copy())
+
+            while len(self.challenges) != 3:
+                if not (len(self.languages) == 0 and (templates[0][1] == 'Y' or templates[0][2] == 'Y')):
+                    self.challenges.append(Challenge.Challenge(templates[0][0], templates[0][1], templates[0][2], int(templates[0][3]), templates[0][4], int(templates[0][5])))
+
+                templates.pop(0)
 
     def saveProgress(self):
         for answer in self.lastAnswers:

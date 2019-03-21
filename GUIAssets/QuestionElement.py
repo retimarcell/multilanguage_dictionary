@@ -8,6 +8,7 @@ class QuestionElement:
         self.langLabel = Label(root, text=lang)
         self.sourceWord = Label(root, text=label)
         self.entry = Entry(root, width=30)
+        self.noProgressGain = False
 
         self.langLabel.grid(row=0, column=1)
         self.sourceWord.grid(row=1, column=0)
