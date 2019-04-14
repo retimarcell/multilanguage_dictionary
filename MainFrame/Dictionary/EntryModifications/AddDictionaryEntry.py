@@ -13,20 +13,25 @@ class AddEntry:
         self.counter = 0
 
         self.root = Tk()
+        self.root.geometry("420x80")
         self.root.resizable(width=FALSE, height=FALSE)
 
         self.frame = Frame(self.root)
-        self.frame.grid(sticky=W+E+N+S)
+        self.frame.pack()
+        self.topFrame = Frame(self.frame)
+        self.bottomFrame = Frame(self.frame)
+        self.topFrame.grid(row=0, sticky=E+W, pady=(10,0))
+        self.bottomFrame.grid(row=1, sticky=E)
 
-        self.label = Label(self.frame, text="%s:" % self.user.languages[0].language)
-        self.entry = Entry(self.frame, width=20)
-        self.forwardButton = Button(self.frame, text="OK", command=self.play)
-        self.cancelButton = Button(self.frame, text="Mégse", command=self.cancelAddition)
+        self.label = Label(self.topFrame, text="%s:" % self.user.languages[0].language.capitalize(), font=("Helvetica", 15))
+        self.entry = Entry(self.topFrame, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13))
+        self.forwardButton = Button(self.bottomFrame, text="Következő", command=self.play, font=("Helvetica", 11), relief=GROOVE)
+        self.cancelButton = Button(self.bottomFrame, text="Mégse", command=self.cancelAddition, font=("Helvetica", 11), relief=GROOVE)
 
-        self.label.grid(row=0, sticky=W+E, columnspan=2)
-        self.entry.grid(row=1, columnspan=2)
-        self.cancelButton.grid(row=2, column=1, sticky=E)
-        self.forwardButton.grid(row=2, column=0, sticky=E)
+        self.label.grid(row=0, column=0, padx=(0,5))
+        self.entry.grid(row=0, column=1)
+        self.cancelButton.grid(row=0, column=1, sticky=E, padx=10)
+        self.forwardButton.grid(row=0, column=0, sticky=E)
 
         self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[0].language)
 
@@ -46,10 +51,13 @@ class AddEntry:
             self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[self.counter].language)
             self.label['text'] = "%s:" % self.user.languages[self.counter].language
             self.entry.delete(0, END)
+            if (self.counter+1) == len(self.user.languages):
+                self.forwardButton.config(text="Befejezés")
         else:
             self.logObj.simpleLog("Words gathered.")
             self.pushNewWordsToDatabase()
             self.saveForUser()
+            self.user.database.setNextWordID()
 
             self.logObj.simpleLog("Word addition finished.")
             showinfo("Siker!", "Sikeresen hozzáadva!")
@@ -59,7 +67,7 @@ class AddEntry:
     def pushNewWordsToDatabase(self):
         self.logObj.simpleLog("Adding words to database...")
 
-        self.user.database.insertIntoTable("WordID", [self.user.username, self.user.database.maxWordID + 1])
+        self.user.database.insertIntoTable("WordID", [self.user.username, self.user.database.nextWordID])
 
         for i in range(len(self.addedWords)):
             self.createValuesForInsertAndSend(self.addedWords[i], i)
@@ -75,12 +83,14 @@ class AddEntry:
         self.user.database.insertIntoTable(tableName, values)
 
     def saveForUser(self):
-        self.user.wordIDs.append(self.user.database.maxWordID + 1)
+        self.user.wordIDs.append(self.user.database.nextWordID)
         for i in range(len(self.user.languages)):
-            self.user.languages[i].addWord(self.user.database.maxWordID + 1, self.addedWords[i])
+            self.user.languages[i].addWord(self.user.database.nextWordID, self.addedWords[i])
 
     def cancelAddition(self):
         if askyesno("Megszakítás", "Biztosan megszakítja a hozzáadást?"):
             self.logObj.simpleLog("Word addition cancelled.")
             self.root.destroy()
-        self.logObj.simpleLog("Word addition cancel cancelled.")
+        else:
+            self.root.focus_force()
+            self.logObj.simpleLog("Word addition cancel cancelled.")

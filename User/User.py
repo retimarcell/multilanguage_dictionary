@@ -1,13 +1,17 @@
-from User import Language, Category, Help, Challenge
+from User import Language, Category, Help, Challenge, ReportUpdates
 import random
 
 
 class User:
+
     def __init__(self, logobj, user, database, isFirstTime):
         self.logObj = logobj
         self.logObj.simpleLog("Initializing user: \"%s\"" % user)
         self.username = user
         self.database = database
+        self.xp = self.database.simpleSelectFromTable("Users", ["username"], [self.username])[0][3]
+        self.level = 0
+        self.isFirstTime = isFirstTime
         self.languages = []
         self.wordIDs = []
         self.categories = []
@@ -16,6 +20,7 @@ class User:
 
         self.lastAnswers = []
 
+        self.calculateLevel()
         self.fillLanguages()
         self.fillWordIDs()
         self.fillWords()
@@ -23,11 +28,24 @@ class User:
         self.fillHelps()
         self.fillChallenges(isFirstTime)
 
+        for language in self.languages:
+            language.calculateProgress()
+
+    def calculateLevel(self):
+        threshold = 30
+        xp = self.xp
+        self.level = 1
+        while (xp-threshold) >= 0:
+            self.level = self.level + 1
+            xp = xp-threshold
+            threshold = threshold + 10
+        return [xp, threshold]
+
     def fillLanguages(self):
         self.logObj.simpleLog("Filling languages...")
         arr = self.database.simpleSelectFromTable("Languages", ["user"], [self.username])
         for ele in arr:
-            self.languages.append(Language.Language(ele[0]))
+            self.languages.append(Language.Language(ele[0], ele[2]))
 
     def fillWordIDs(self):
         self.logObj.simpleLog("Filling word ID array...")
@@ -61,6 +79,12 @@ class User:
             else:
                 self.categories[index].wordIDs.append(categoryElement[2])
 
+        for cat in self.categories:
+            try:
+                cat.wordIDs.remove(-1)
+            except:
+                pass
+
     def getCategoryIndex(self, category):
         for i in range(len(self.categories)):
             if self.categories[i].category == category:
@@ -70,7 +94,7 @@ class User:
     def fillHelps(self):
         self.logObj.simpleLog("Creating help objects...")
 
-        helpsArr = [["Egész szó", "FullWord"], ["Kezdőbetű", "StartLetter"], ["Szó kihagyása", "Skip"]]
+        helpsArr = [["Egész szó", "FullWord"], ["Kezdőbetű", "StartLetter"], ["Hibaellenőrzés", "Check"]]
 
         for h in helpsArr:
             self.helps.append(Help.Help(h[0], h[1]))
@@ -130,7 +154,11 @@ class User:
                 templates.pop(0)
 
     def saveProgress(self):
+        self.logObj.simpleLog("Starting progress saving")
+        report = ReportUpdates.ReportUpdates(self.xp)
+
         for answer in self.lastAnswers:
+            self.logObj.simpleLog("Answer processing: %i" % answer.wordID)
             for lang in self.languages:
                 if lang.language == answer.answerLang:
                     if lang.updateWordProgress(answer.wordID, answer.progress):
@@ -140,10 +168,29 @@ class User:
                 if challenge.noLanguageRestriction or challenge.sourceLanguage == answer.sourceLang or challenge.destinationLanguage == answer.answerLang:
                     challenge.progress = challenge.progress + 1
 
+            if answer.progress == 1:
+                self.xp = self.xp + 5
+
+        self.updateLevel(report)
         self.calculateChallenges()
-        self.calculateProgresses()
+        self.calculateProgresses(report)
+
+        return report
+
+    def updateLevel(self, report):
+        self.logObj.simpleLog("Updating user level")
+        self.database.updateXp(self.username, self.xp)
+        report.calculateFinishXp(self.xp)
+
+        prevLevel = self.level
+        self.calculateLevel()
+        while self.level > prevLevel:
+            self.addLevelUpReward(report)
+            report.amountOfLevelUps = report.amountOfLevelUps + 1
+            prevLevel = prevLevel + 1
 
     def calculateChallenges(self):
+        self.logObj.simpleLog("Calculating Challenges")
         for challenge in self.challenges:
             if challenge.progress >= challenge.amount:
                 help, amount = challenge.getHelpAndAmount()
@@ -158,6 +205,23 @@ class User:
             else:
                 self.database.updateChallenge(challenge.sourceLanguage, challenge.destinationLanguage, challenge.amount, challenge.reward, challenge.rewardAmount, self.username, challenge.progress)
 
-    def calculateProgresses(self):
-        # TODO
-        pass
+    def calculateProgresses(self, report):
+        self.logObj.simpleLog("Calculating language progresses")
+        c = 0
+        for lang in self.languages:
+            helpsGained = lang.calculateProgress()
+            c += helpsGained
+            if helpsGained != 0:
+                report.languageLevelUps.append([lang.language.capitalize(), lang.getLevelXpThreshold(lang.progress)[0]])
+
+            self.database.updateLanguageXp(lang.language, self.username, lang.progress)
+
+        for i in range(c):
+            self.addLevelUpReward(report)
+
+    def addLevelUpReward(self, report):
+        help = random.choice(self.helps)
+        plusAmount = random.randint(1, 5)
+        report.rewards.append([help.text, plusAmount])
+        help.amount = help.amount + plusAmount
+        self.database.updateHelp(help.amount, help.type, self.username)

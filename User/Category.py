@@ -2,7 +2,6 @@ class Category:
 
     def __init__(self, category):
         self.category = category
-        self.progress = 0
         self.wordIDs = []
 
     def getCategory(self, wordID):

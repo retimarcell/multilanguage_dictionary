@@ -113,14 +113,15 @@ def wordIDInCategoryCheck(logObj, userCategories, eligibleCategories, wordID):
     return False
 
 
-def getSourceWord(logObj, languages, sourceLang, wordID):
+def getSourceWord(logObj, languages, sourceLang, wordID, selectedLanguage):
     logObj.simpleLog("Getting the source word.")
 
-    if sourceLang == " - ":
+    if "-" in sourceLang:
         while True:
             randomLang = random.choice(languages)
-            arrTemp = createReturnArrayForSourceWord(logObj, randomLang, wordID)
-            return arrTemp
+            if randomLang.language != selectedLanguage:
+                arrTemp = createReturnArrayForSourceWord(logObj, randomLang, wordID)
+                return arrTemp
 
     for lang in languages:
         if lang.language == sourceLang:

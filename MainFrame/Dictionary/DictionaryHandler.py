@@ -11,10 +11,16 @@ class DictionaryFrame(Frame):
         self.logObj.simpleLog("Creating Dictionary Frame...")
         self.user = user
 
-        Frame.__init__(self, master=root, width=1344, height=720)
-        self.grid()
+        Frame.__init__(self, master=root)
+        self.pack_propagate(0)
+        self.pack(fill=BOTH, expand=1)
+        self.frame = Frame(self)
+        self.frame.pack(anchor='c')
 
-        self.tableHeader = dtr.TableHeader(self.logObj, self.user, self)
+        self.topFrame = Frame(self.frame)
+        self.topFrame.grid(row=0)
+
+        self.tableHeader = dtr.TableHeader(self.logObj, self.user, self.topFrame, self)
 
         self.tableRows = [None for i in range(15)]
 
@@ -35,34 +41,35 @@ class DictionaryFrame(Frame):
         while i != (15 * (section+1)):
             rowNum = int(i % 15)
             if i < len(self.user.wordIDs):
-                self.tableRows[rowNum] = dtr.TableRow(self.logObj, self.user.wordIDs[i], self.user, self, rowNum + 1)
+                self.tableRows[rowNum] = dtr.TableRow(self.logObj, self.user.wordIDs[i], self.user, self.topFrame, rowNum + 1)
             i += 1
 
     def createPageButtons(self):
-        self.prevButton = Button(self, text="Előző", command=lambda x=-1: self.changeDisplay(x))
-        self.nextButton = Button(self, text="Következő", command=lambda x=1: self.changeDisplay(x))
-
         colnum = len(self.tableRows[0].buttons)
-        self.prevButton.grid(row=16, column=colnum-1)
-        self.nextButton.grid(row=16, column=colnum)
 
-        self.botFrame = Frame(self)
-        self.addEntryButton = Button(self.botFrame, text="Új szó", command=self.addWord)
-        self.addLanguageButton = Button(self.botFrame, text="Új nyelv", command=self.addLanguage)
-        self.addCategoryButton = Button(self.botFrame, text="Új kategória", command=self.addCategory)
+        self.botFrame = Frame(self.frame)
+        self.botFrame.grid(row=1, sticky=S)
+        self.botInnerFrame = Frame(self.botFrame)
+        self.botInnerFrame.pack_propagate(0)
+        self.botInnerFrame.pack(side=BOTTOM, anchor='c')
 
-        self.botFrame.grid(row=17, columnspan=colnum)
-        self.addEntryButton.grid(row=0, column=0)
-        self.addLanguageButton.grid(row=0, column=1)
-        self.addCategoryButton.grid(row=0, column=2)
+        self.prevButton = Button(self.botInnerFrame, text="Előző", command=lambda x=-1: self.changeDisplay(x), relief=GROOVE, font=("Helvetica", 11), width=10)
+        self.nextButton = Button(self.botInnerFrame, text="Következő", command=lambda x=1: self.changeDisplay(x), relief=GROOVE, font=("Helvetica", 11), width=10)
+        self.addEntryButton = Button(self.botInnerFrame, text="Új szó", command=self.addWord, relief=GROOVE, font=("Helvetica", 11), width=10)
+        self.addLanguageButton = Button(self.botInnerFrame, text="Új nyelv", command=self.addLanguage, relief=GROOVE, font=("Helvetica", 11), width=10)
+
+        self.prevButton.grid(row=0, column=2, sticky=S+E)
+        self.nextButton.grid(row=0, column=3, sticky=S+E)
+        self.addEntryButton.grid(row=0, column=0, sticky=S+W)
+        self.addLanguageButton.grid(row=0, column=1, sticky=S+W)
 
     def changeDisplay(self, changeNum):
-        if (changeNum != -1 or self.pageNumber != 0) or (changeNum != 1 or self.pageNumber != self.maxPageNumber):
+        if (changeNum == -1 and self.pageNumber == 0) or (changeNum == 1 and self.pageNumber == self.maxPageNumber):
+            self.logObj.simpleLog("Button not changing display on purpose")
+        else:
             self.logObj.simpleLog("Changing displayed words in table...")
             self.pageNumber += changeNum
             self.displayTable(self.pageNumber)
-        else:
-            self.logObj.simpleLog("Button not changing display on purpose")
 
     def addWord(self):
         ADE = ade.AddEntry(self.logObj, self.user)
@@ -73,13 +80,10 @@ class DictionaryFrame(Frame):
         self.tableHeader.refresh()
         self.displayTable()
 
-    def addCategory(self):
-        pass
-
     def emptyListToNones(self):
         for ele in self.tableRows:
             if ele is not None:
                 try:
-                    ele.destroy()
+                    ele.destroyButtons()
                 except:
                     pass

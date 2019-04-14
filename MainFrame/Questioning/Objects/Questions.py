@@ -28,7 +28,7 @@ def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
         else:
             optionsFailed = False
 
-            while len(randomWordIDs) != 0:
+            while len(randomWordIDs) != 0 and len(questions) != amount:
                 selectedLanguage = QET.getRandomLanguage(logObj, options.languages, options.source, user.languages)
                 answerWord, selectedWordID, removableIDs = QET.getRandomAnswerWord(logObj, randomWordIDs, user, selectedLanguage, options.categories)
 
@@ -36,7 +36,7 @@ def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
                     removeWordIDs(logObj, None, removeWordIDs, randomWordIDs)
                     continue
 
-                sourceWord, sourceLang, isSuccesful = QET.getSourceWord(logObj, user.languages, options.source, selectedWordID)
+                sourceWord, sourceLang, isSuccesful = QET.getSourceWord(logObj, user.languages, options.source, selectedWordID, selectedLanguage)
 
                 removeWordIDs(logObj, None, removableIDs, randomWordIDs)
                 removeWordIDs(logObj, selectedWordID, None, randomWordIDs)

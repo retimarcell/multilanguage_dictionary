@@ -13,18 +13,19 @@ class AddLanguage:
         self.root = Tk()
         self.root.resizable(width=FALSE, height=FALSE)
 
-        self.label = Label(self.root, text='Az új nyelv:')
-        self.entry = Entry(self.root, width=20)
+        self.label = Label(self.root, text='Az új nyelv:', font=("Helvetica", 13))
+        self.entry = Entry(self.root, width=25, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13))
         self.botFrame = Frame(self.root)
-        self.confirmButton = Button(self.botFrame, text="OK", command=self.confirm)
-        self.cancelButton = Button(self.botFrame, text="Mégse", command=self.cancel)
+        self.confirmButton = Button(self.botFrame, text="OK", font=("Helvetica", 11), command=self.confirm, relief=GROOVE)
+        self.cancelButton = Button(self.botFrame, text="Mégse", font=("Helvetica", 11), command=self.cancel, relief=GROOVE)
 
-        self.label.pack(fill=X)
-        self.entry.pack(fill=X)
-        self.botFrame.pack(fill=X)
-        self.cancelButton.grid(row=0, column=1, sticky=E)
+        self.label.grid(row=0, sticky=E+W, pady=(5,0))
+        self.entry.grid(row=1, sticky=E+W, pady=(2,2))
+        self.botFrame.grid(row=2, sticky=E)
+        self.cancelButton.grid(row=0, column=1, sticky=E, padx=10)
         self.confirmButton.grid(row=0, column=0, sticky=E)
 
+        self.root.focus_force()
         self.entry.focus()
         self.root.bind('<Return>', self.confirm)
         self.root.mainloop()
@@ -33,7 +34,7 @@ class AddLanguage:
         newLang = self.entry.get()
 
         newLang = removeSpecialChars(newLang)
-        print(newLang)
+
         if newLang == "":
             self.logObj.simpleLog("No language added, resuming")
             showerror("Hiba", "Üres szó van megadva!")
@@ -56,7 +57,7 @@ class AddLanguage:
     def addToUser(self, newLang):
         self.logObj.simpleLog("Adding language to user: %s" % newLang)
 
-        langObj = Language.Language(newLang)
+        langObj = Language.Language(newLang, 0)
         for wordID in self.user.wordIDs:
             langObj.wordIDs.append(wordID)
             langObj.words.append("")
@@ -68,7 +69,7 @@ class AddLanguage:
 
         newLang = "l_%s" % nL
 
-        self.user.database.insertIntoTable("Languages", [newLang[2:], self.user.username])
+        self.user.database.insertIntoTable("Languages", [newLang[2:], self.user.username, 0])
 
         if not self.databaseExists(newLang):
             self.logObj.simpleLog("Creating new language database: %s" % newLang)
@@ -89,10 +90,13 @@ class AddLanguage:
         return True
 
     def cancel(self):
-        if askyesno("Megszakítás", "Biztosan megszakítja a hozzáadást?"):
+        result = askyesno("Megszakítás", "Biztosan megszakítja a hozzáadást?")
+        if result:
             self.logObj.simpleLog("Language addition cancelled.")
             self.root.destroy()
-        self.logObj.simpleLog("Language addition cancel cancelled.")
+        else:
+            self.root.focus_force()
+            self.logObj.simpleLog("Language addition cancel cancelled.")
 
 
 def removeSpecialChars(word):
@@ -109,5 +113,5 @@ def removeSpecialChars(word):
             reWord += "u"
         else:
             reWord += letter
-    print(reWord)
+
     return reWord

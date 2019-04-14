@@ -6,23 +6,26 @@ from MainFrame.Dictionary.LanguageModifications import DeleteLanguage as dl
 
 class TableHeader:
 
-    def __init__(self, logobj, user, root):
+    def __init__(self, logobj, user, root, mainRoot, isDictionary=True):
         self.logObj = logobj
         self.logObj.simpleLog("Creating table header row for dictionary")
         self.user = user
         self.root = root
+        self.mainRoot = mainRoot
 
         self.headers = []
 
-        self.refresh()
+        self.refresh(isDictionary)
 
-    def refresh(self):
+    def refresh(self, isDictionary=True):
         for e in self.headers:
             e.destroy()
         for i in range(len(self.user.languages)):
-            e = Label(self.root, text=self.user.languages[i].language, borderwidth=4, relief="solid", width=20)
-            e.grid(row=0, column=i)
-            e.bind('<Button-3>', lambda event, x=i: self.handleDelete(event, x))
+            e = Button(self.root, text=self.user.languages[i].language.upper(), borderwidth=2, relief="solid", width=19, font=("Helvetica", 12))
+            e.bind('<Button-1>', lambda x: 'break')
+            e.grid(row=0, column=i, pady=(12,0))
+            if isDictionary:
+                e.bind('<Button-3>', lambda event, x=i: self.handleDelete(event, x))
             self.headers.append(e)
 
     def handleDelete(self, event, column):
@@ -35,12 +38,12 @@ class TableHeader:
 
     def delete(self, column):
         dl.deleteLanguage(self.logObj, self.user, self.headers[column].cget('text'))
-        self.root.displayTable()
+        self.mainRoot.displayTable()
 
 
 class TableRow:
 
-    def __init__(self, logobj, wordID, user, root, rowNum):
+    def __init__(self, logobj, wordID, user, root, rowNum, isDictionary=True):
         self.logObj = logobj
         self.logObj.simpleLog("Creating table row for wordID: %i" % wordID)
         self.wordID = wordID
@@ -51,11 +54,15 @@ class TableRow:
 
         for i in range(len(self.user.languages)):
             wordDataArr = self.user.languages[i].getWordAndProgress(wordID)
-            self.buttons.append(Button(self.root, text=wordDataArr[0], borderwidth=1, relief="solid", width=20))
-            self.setProgressColor(self.buttons[i], wordDataArr[1])
+            try:
+                self.buttons.append(Button(self.root, text=wordDataArr[0], borderwidth=1, relief=SOLID, width=22, font=("Helvetica", 10)))
+            except TclError:
+                pass
+            #self.setProgressColor(self.buttons[i], wordDataArr[1])
             self.buttons[i].grid(row=rowNum, column=i)
-            self.buttons[i].bind('<Double-Button-1>', lambda x=i: self.doubleClick(x))
-            self.buttons[i].bind('<Button-3>', lambda event, x=rowNum: self.showRightClickOptions(event, x))
+            self.buttons[i].bind('<Button-1>', lambda e: 'break')
+            if isDictionary:
+                self.buttons[i].bind('<Button-3>', lambda event, x=rowNum: self.showRightClickOptions(event, x))
 
     def getButtonText(self, i):
         self.logObj.simpleLog("Returning table row text: %s" % self.buttons[i].cget('text'))
@@ -71,10 +78,7 @@ class TableRow:
 
     def changeButton(self, index, newValue):
         self.buttons[index].configure(text=newValue)
-        self.setProgressColor(self.buttons[index], 0)
-
-    def doubleClick(self, index):
-        pass
+        #self.setProgressColor(self.buttons[index], 0)
 
     def showRightClickOptions(self, event, rowNum):
         popup = Menu(self.root, tearoff=0)

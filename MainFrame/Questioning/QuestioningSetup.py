@@ -11,28 +11,30 @@ class QuestioningSetupFrame(Frame):
         self.user = user
 
         Frame.__init__(self, master=root)
-        self.grid(row=0)
+        self.pack_propagate(0)
+        self.grid(row=0, sticky=NSEW, padx=(440,0), pady=(60,0))
 
         self.setupLabels()
         self.setupDropdowns()
 
     def setupLabels(self):
         self.logObj.simpleLog("Creating setup Labels.")
-        self.categoryLabel = Label(self, text='Kategória: ')
-        self.languageFilterLabel = Label(self, text='Nyelv: ')
-        self.sourceLanguageLabel = Label(self, text='Source Nyelv: ')
-        self.modeLabel = Label(self, text='Modifikáció: ')
+        Label(self, text='Kérem válassza ki a kikérdezéshez tartozó modifikációkat!', font=("Helvetica", 15)).grid(row=0, columnspan=2, pady=(0,20))
+        self.categoryLabel = Label(self, text='Kategória: ', font=("Helvetica", 11))
+        self.languageFilterLabel = Label(self, text='Nyelv: ', font=("Helvetica", 11))
+        self.sourceLanguageLabel = Label(self, text='Source Nyelv: ', font=("Helvetica", 11))
+        self.modeLabel = Label(self, text='Modifikáció: ', font=("Helvetica", 11))
 
-        self.categoryLabel.grid(row=0, column=0)
-        self.languageFilterLabel.grid(row=1, column=0)
-        self.sourceLanguageLabel.grid(row=2, column=0)
-        self.modeLabel.grid(row=3, column=0)
+        self.categoryLabel.grid(row=1, column=0, sticky=E, padx=(0,10), pady=(5,0))
+        self.languageFilterLabel.grid(row=2, column=0, sticky=E, padx=(0,10), pady=(5,0))
+        self.sourceLanguageLabel.grid(row=3, column=0, sticky=E, padx=(0,10), pady=(5,0))
+        self.modeLabel.grid(row=4, column=0, sticky=E, padx=(0,10), pady=(5,0))
 
     def setupDropdowns(self):
-        self.categoryDropdown = qsd.QuestioningDropdown(self.logObj, self, "category", self.user, 0, 1)
-        self.languageDropdown = qsd.QuestioningDropdown(self.logObj, self, "language", self.user, 1, 1)
-        self.sourceLanguageDropdown = qsd.QuestioningOptionMenu(self.logObj, self, "source language", self.user, 2, 1)
-        self.modeDropdown = qsd.QuestioningOptionMenu(self.logObj, self, "mode", self.user, 3, 1)
+        self.categoryDropdown = qsd.QuestioningDropdown(self.logObj, self, "category", self.user, 1, 1)
+        self.languageDropdown = qsd.QuestioningDropdown(self.logObj, self, "language", self.user, 2, 1)
+        self.sourceLanguageDropdown = qsd.QuestioningOptionMenu(self.logObj, self, "source language", self.user, 3, 1)
+        self.modeDropdown = qsd.QuestioningOptionMenu(self.logObj, self, "mode", self.user, 4, 1)
 
     def getSetup(self):
         lang = self.languageDropdown.getSelectedOptions()

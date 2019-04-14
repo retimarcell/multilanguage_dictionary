@@ -1,5 +1,6 @@
 from tkinter import *
 
+
 class QuestioningDropdown(Menubutton):
 
     def __init__(self, logObj, root, type, user, row, col):
@@ -9,10 +10,10 @@ class QuestioningDropdown(Menubutton):
         self.user = user
         self.choices = {}
 
-        Menubutton.__init__(self, master=root, width=20, indicatoron=True, relief=RIDGE, borderwidth=1)
+        Menubutton.__init__(self, master=root, width=20, indicatoron=True, relief=GROOVE, borderwidth=1)
         self.menu = Menu(self, tearoff=False)
         self.configure(menu=self.menu)
-        self.grid(row=row, column=col)
+        self.grid(row=row, column=col, sticky=W, padx=(10,0), pady=(5,0))
         self.fillMenu()
 
     def fillMenu(self):
@@ -55,8 +56,8 @@ class QuestioningOptionMenu(OptionMenu):
         self.selected.set(options[0])
 
         OptionMenu.__init__(self, root, self.selected, *options)
-        self.configure(width=20, indicatoron=True, relief=RIDGE, borderwidth=1)
-        self.grid(row=row, column=col)
+        self.configure(width=20, indicatoron=True, relief=GROOVE, borderwidth=1)
+        self.grid(row=row, column=col, sticky=W, padx=(8,0), pady=(5,0))
 
     def getSelectedOption(self):
         self.logObj.simpleLog("Returning selected option from mode: %s" % self.selected.get())

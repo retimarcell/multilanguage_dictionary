@@ -9,8 +9,8 @@ class HeaderButton(Button):
         self.onDisplay = False
         self.logObj.simpleLog("Creating header button with title \"%s\"" % self.title)
 
-        Button.__init__(self, master=root, text=self.title, bg='white', activebackground='silver', font=('Helvetica', '15'))
-        self.grid(column=self.position, row=0, sticky=N+S+E+W)
+        Button.__init__(self, master=root, text=self.title, bg='white', activebackground='silver', font=('Helvetica', '15'), width=27)
+        self.grid(column=self.position, row=0, sticky=W)
 
         self.bind("<Enter>", self.on_hover)
         self.bind("<Leave>", self.off_hover)

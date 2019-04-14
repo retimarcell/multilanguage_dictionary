@@ -10,18 +10,19 @@ class LoginWindow:
         self.logObj.simpleLog("Creating login window...")
 
         self.root = Tk()
+        self.root.title("Bejelentkezés")
         self.frame = Frame(self.root)
         self.frame.pack()
         self.buttonFrame = Frame(self.frame)
         self.buttonFrame.grid(row=3, column=1)
         self.logObj.simpleLog("Frame creation...")
 
-        self.labelUsername = Label(self.frame, text="Username: ")
-        self.labelPassword = Label(self.frame, text="Password: ")
+        self.labelUsername = Label(self.frame, text="Felhasználónév: ")
+        self.labelPassword = Label(self.frame, text="Jelszó: ")
         self.entryUsername = Entry(self.frame)
         self.entryPassword = Entry(self.frame, show="*")
-        self.loginButton = Button(self.buttonFrame, text="Login", command=self.login)
-        self.registerButton = Button(self.buttonFrame, text='Register', command=self.register)
+        self.loginButton = Button(self.buttonFrame, text="Bejelentkezés", command=self.login, relief=GROOVE)
+        self.registerButton = Button(self.buttonFrame, text='Regisztráció', command=self.register, relief=GROOVE)
 
         self.root.bind('<Return>', self.login)
 
@@ -43,34 +44,34 @@ class LoginWindow:
 
         if self.db.checkUsersExists(self.entryUsername.get(), self.entryPassword.get()):
             self.logObj.simpleLog("Login was successful for \"%s\"" % self.entryUsername.get())
-            mb.showinfo("Success!", "Welcome %s" % self.entryUsername.get())
+            mb.showinfo("Siker!", "Üdvözlöm, %s!" % self.entryUsername.get())
             self.user = self.entryUsername.get()
             self.isFirstTime = self.handleDate()
             self.logObj.simpleLog("Closing the login window...")
             self.root.destroy()
         else:
             self.logObj.simpleLog("Login was NOT successful for \"%s\"" % self.entryUsername.get())
-            mb.showerror("Failure!", "Incorrect login credentials!")
+            mb.showerror("Hiba!", "Rossz felhasználónév/jelszó!")
 
     def handleDate(self):
         lastLogin = self.db.simpleSelectFromTable("Users", ["username"], [self.user])[0][2]
         date = datetime.datetime.now().strftime("%Y-%m-%d")
 
         self.db.updateLoginTime(self.user, date)
-        if lastLogin == date:
+        if str(lastLogin) == str(date):
             return False
         return True
 
     def register(self):
         self.clearEntries()
 
-        self.labelPasswordConfirm = Label(self.frame, text="Password Again: ")
+        self.labelPasswordConfirm = Label(self.frame, text="Jelszó újra: ")
         self.entryPasswordConfirm = Entry(self.frame, show='*')
         self.labelPasswordConfirm.grid(row=2, column=0)
         self.entryPasswordConfirm.grid(row=2, column=1)
 
-        self.loginButton.configure(text='Register', command=lambda x='R': self.endRegister(x))
-        self.registerButton.configure(text='Cancel', command=lambda x='C': self.endRegister(x))
+        self.loginButton.configure(text='Regisztráció', command=lambda x='R': self.endRegister(x))
+        self.registerButton.configure(text='Mégse', command=lambda x='C': self.endRegister(x))
 
 
     def endRegister(self, value):
@@ -78,25 +79,25 @@ class LoginWindow:
         if value == 'R':
             if self.entryUsername.get() == "" or self.entryPassword.get() == "" or self.entryPasswordConfirm.get() == "":
                 self.logObj.simpleLog("Register failed: Missing username/password.")
-                mb.showerror("Failure!", "Missing username/password!")
+                mb.showerror("Hiba!", "Hiányzó felhasználónév/jelszó!")
             elif self.entryPassword.get() != self.entryPasswordConfirm.get():
                 self.logObj.simpleLog("Register failed: Passwords are not corresponding.")
-                mb.showerror("Failure!", "Passwords are not corresponding!")
+                mb.showerror("Hiba!", "Nem megegyező a két jelszó!")
             else:
                 if not self.db.register(self.entryUsername.get(), self.entryPassword.get()):
                     self.logObj.simpleLog("Register failed because of duplicate username.")
-                    mb.showerror("Failure!", "Username already exists!")
+                    mb.showerror("Hiba!", "Felhasználónév már létezik!")
                 else:
                     self.logObj.simpleLog("Succesful registration for: %s" % self.entryUsername.get())
-                    mb.showinfo("Success!", "Succesful registration with username: %s" % self.entryUsername.get())
+                    mb.showinfo("Siker!", "Sikeres regisztráció: %s" % self.entryUsername.get())
                     value = 'C'
 
         if value == 'C':
             self.clearEntries()
             self.labelPasswordConfirm.destroy()
             self.entryPasswordConfirm.destroy()
-            self.loginButton.configure(text="Login", command=self.login)
-            self.registerButton.configure(text='Register', command=self.register)
+            self.loginButton.configure(text="Bejelentkezés", command=self.login)
+            self.registerButton.configure(text='Regisztráció', command=self.register)
 
 
     def clearEntries(self):

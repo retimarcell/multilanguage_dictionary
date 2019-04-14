@@ -4,7 +4,7 @@ from tkinter.messagebox import *
 def deleteLanguage(logObj, user, language):
     if confirmDelete(logObj, language):
         for i in range(len(user.languages)):
-            if user.languages[i].language == language:
+            if user.languages[i].language.upper() == language:
                 deleteFromDatabase(logObj, user, user.languages[i])
                 user.languages.pop(i)
 

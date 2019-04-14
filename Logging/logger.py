@@ -85,11 +85,11 @@ class Logger:
 
 
 def attachAnswer(reportFile, answer, index, isLast):
-
+    i = index + 1
     if answer.progress != -1:
-        reportFile.write("%i. szó [Helyes]\n" % index)
+        reportFile.write("%i. szó [Helyes]\n" % i)
     else:
-        reportFile.write("%i. szó [Rossz]\n" % index)
+        reportFile.write("%i. szó [Rossz]\n" % i)
     reportFile.write("Kérdezett szó: %s (%s)\n" % (answer.label, answer.sourceLang))
     reportFile.write("Várt szó: %s (%s)\n" % (answer.answer, answer.answerLang))
     reportFile.write("Beadott szó: %s\n" % answer.givenAnswer)

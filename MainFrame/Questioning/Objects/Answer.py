@@ -8,13 +8,12 @@ class Answer:
         self.sourceLang =   questionObj.sourceLang
         self.answerLang =   questionObj.answerLang
         self.label =        questionObj.label
-        self.answer =       questionObj.answer
-        self.givenAnswer =  givenAnswer
+        self.answer =       questionObj.answer.upper()
+        self.givenAnswer =  givenAnswer.upper()
 
         self.analyze()
 
     def analyze(self):
-        self.logObj.simpleLog("Analyzing answer...")
 
         self.progress = 0
         if self.answer == self.givenAnswer:

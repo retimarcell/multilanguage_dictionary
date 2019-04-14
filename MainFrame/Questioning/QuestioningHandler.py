@@ -11,16 +11,17 @@ class QuestioningFrame(Frame):
         self.logObj.simpleLog("Creating base frame for questioning...")
         self.user = user
 
-        Frame.__init__(self, master=root, width=1344, height=720)
-        self.grid()
+        Frame.__init__(self, master=root)
+        self.pack_propagate(0)
+        self.pack(fill=BOTH, expand=1)
 
         self.createQuestioningSetupFrame()
 
     def createQuestioningSetupFrame(self):
         self.showedFrame = qs.QuestioningSetupFrame(self.logObj, self, self.user)
 
-        self.submitButton = Button(self, text="OK", width=10, command=self.startQuestioning)
-        self.submitButton.grid(row=1, sticky=E)
+        self.submitButton = Button(self, text="OK", width=10, command=self.startQuestioning, relief=GROOVE)
+        self.submitButton.grid(row=1, sticky=E, padx=(0,115), pady=(10,0))
 
     def startQuestioning(self):
         self.setupOptions = self.showedFrame.getSetup()

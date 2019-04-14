@@ -1,18 +1,43 @@
 class Language:
 
-    def __init__(self, lang):
+    def __init__(self, lang, xp):
         self.language = lang
-        self.progress = 0
+        self.progress = xp
         self.words = []
         self.progresses = []
         self.wordIDs = []
+        self.temporaryWordProgressGains = 0
 
         self.calculateProgress()
 
     def calculateProgress(self):
-        self.progress = 0
-        for prog in self.progresses:
-            self.progress += prog
+        gains = self.temporaryWordProgressGains * 5
+        helpsGained = 0
+
+        if gains > 0:
+            newProgress = self.progress + gains
+            oldLevel = self.getLevelXpThreshold(self.progress)[0]
+            newLevel = self.getLevelXpThreshold(newProgress)[0]
+
+            while newLevel > oldLevel:
+                helpsGained = helpsGained + 1
+                oldLevel = oldLevel + 1
+
+            self.progress = newProgress
+
+        self.temporaryWordProgressGains = 0
+
+        return helpsGained
+
+    def getLevelXpThreshold(self, progress):
+        threshold = 30
+        xp = progress
+        level = 1
+        while (xp - threshold) > 0:
+            xp = xp - threshold
+            threshold = threshold + 10
+            level = level + 1
+        return [level, xp, threshold]
 
     def getLanguageAndWord(self, wordID):
         for i in range(len(self.wordIDs)):
@@ -51,6 +76,9 @@ class Language:
 
     def updateWordProgress(self, wordID, amount):
         index = self.wordIDs.index(wordID)
+
+        if amount == 1:
+            self.temporaryWordProgressGains = self.temporaryWordProgressGains + amount
 
         if (self.progresses[index] != 0 or amount != -1) and (self.progresses[index] != 60 or amount != 1):
             self.progresses[index] = self.progresses[index] + amount

@@ -1,3 +1,4 @@
+import datetime
 import mysql.connector as mariadb
 
 class Database():
@@ -9,14 +10,28 @@ class Database():
         self.logObj.simpleLog('Database connection estabilished.')
 
         self.cursor = self.dbConnection.cursor()
-        self.maxWordID = self.getCount("WordID", "*")
-
+        self.nextWordID = 0
+        self.setNextWordID()
 
     def executeStatement(self, statement):
         self.logObj.statementLog(statement)
         self.cursor.execute(statement)
         self.logObj.statementLog("Statement executed.")
 
+    def setNextWordID(self):
+        returnValue = self.simpleSelectFromTable("WordID")
+        tempArr = []
+
+        for ele in returnValue:
+            tempArr.append(ele[1])
+
+        i = 1
+        while True:
+            if i not in tempArr:
+                self.logObj.simpleLog("Next free Word ID: %i" % i)
+                self.nextWordID = i
+                break
+            i = i + 1
 
     def checkUsersExists(self, username, password=None):
         self.logObj.simpleLog("Login check on database on Users.")
@@ -36,7 +51,7 @@ class Database():
         self.logObj.simpleLog("Adding new entry to Users.")
 
         if not self.checkUsersExists(username):
-            statement = "insert into Users values (\"%s\", \"%s\")" % (username, password)
+            statement = "insert into Users values (\"%s\", \"%s\", \"%s\", 0)" % (username, password, datetime.datetime.now().strftime("%Y-%m-%d"))
 
             self.executeStatement(statement)
             self.dbConnection.commit()
@@ -128,6 +143,23 @@ class Database():
 
         self.executeStatement(statement)
         self.dbConnection.commit()
+
+
+    def updateXp(self, user, newXp):
+        self.logObj.simpleLog("Creating update statement for user xp")
+        statement = "update Users set xp=%i where username='%s'" % (newXp, user)
+
+        self.executeStatement(statement)
+        self.dbConnection.commit()
+
+
+    def updateLanguageXp(self, lang, user, newXp):
+        self.logObj.simpleLog("Creating update statement for language xp")
+        statement = "update Languages set xp=%i where user='%s' and language='%s'" % (newXp, user, lang)
+
+        self.executeStatement(statement)
+        self.dbConnection.commit()
+
 
     def getCount(self, table, countArg, where=None, what=None):
         self.logObj.simpleLog("Creating select count(%s) statement for %s" % (countArg, table))

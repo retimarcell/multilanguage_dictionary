@@ -14,7 +14,7 @@ class QuestioningFrame(Frame):
         self.isStart = True
 
         Frame.__init__(self, master=self.root)
-        self.grid()
+        self.grid(sticky=NSEW, padx=390, pady=100)
 
         self.amountOf = self.getAmount()
         self.questions = Questions.getQuestions(logObj, self.user, self.amountOf, self.options)
@@ -41,28 +41,29 @@ class QuestioningFrame(Frame):
         self.leftFrame = Frame(self)
         self.rightFrame = Frame(self)
 
-        self.leftFrame.grid(row=0, column=0)
-        self.rightFrame.grid(row=0, column=1)
+        self.leftFrame.grid(row=0, column=0, padx=(0, 20))
+        self.rightFrame.grid(row=0, column=1, padx=(20, 0))
 
         self.setupButtons()
 
         self.configureLeftFrame()
 
     def setupButtons(self):
-        self.nextButton = Button(self.leftFrame, text='Következő', command=self.play)
-        self.nextButton.grid(row=2, column=1)
+        self.nextButton = Button(self.leftFrame, text='Következő', command=self.play, relief=GROOVE, font=("Helvetica", 11))
+        self.nextButton.grid(row=3, column=0)
 
     def configureLeftFrame(self):
-        self.questionsLeftLabel = Label(self.rightFrame)
-        self.questionsAnsweredLabel = Label(self.rightFrame)
+        self.logObj.simpleLog("Creating left frame")
+        self.questionsLeftLabel = Label(self.rightFrame, font=("Helvetica", 11))
+        self.questionsAnsweredLabel = Label(self.rightFrame, font=("Helvetica", 11))
 
-        self.questionsLeftLabel.grid(row=0)
-        self.questionsAnsweredLabel.grid(row=1)
+        self.questionsLeftLabel.grid(row=0, padx=(0, 5))
+        self.questionsAnsweredLabel.grid(row=1, padx=(0, 5))
 
         self.helpAmounts = []
         self.fullWordHelpButton = self.setupHelpButton("FullWord", 0)
         self.startLetterHelpButton = self.setupHelpButton("StartLetter", 1)
-        self.skipHelpButton = self.setupHelpButton("Skip", 2)
+        self.skipHelpButton = self.setupHelpButton("Check", 2)
 
         self.helpButtons = [self.fullWordHelpButton, self.startLetterHelpButton, self.skipHelpButton]
 
@@ -71,13 +72,16 @@ class QuestioningFrame(Frame):
         self.helpAmounts.append(self.user.helps[index].amount)
         btn = Button(self.rightFrame,
                      text="%s: %i" % (self.user.helps[index].text, self.user.helps[index].amount),
+                     font=("Helvetica", 11),
+                     width=17,
+                     relief=RIDGE,
                      command=lambda x=hType, z=rowC: self.helpActivated(x, z))
-        btn.grid(row=rowC+2)
+        btn.grid(row=rowC+2, padx=(0, 5))
 
         return btn
 
     def play(self, event=None):
-
+        self.logObj.simpleLog("[Questioning] Play pushed")
         if not self.isStart:
             self.analyzeAnswer()
             self.currentQuestion += 1
@@ -90,7 +94,10 @@ class QuestioningFrame(Frame):
         self.questionsAnsweredLabel.config(text='Jól megválaszolt kérdések: %i/%i' % (self.rightAnswers, self.currentQuestion))
 
         if self.currentQuestion < len(self.questions):
-            self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label)
+            if self.amountOf == 30:
+                self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label)
+            else:
+                self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label, self.questions[self.currentQuestion].sourceLang)
         else:
             self.finalizeQuestioning()
 
@@ -103,13 +110,11 @@ class QuestioningFrame(Frame):
             self.helpAmounts[index] = self.helpAmounts[index] - 1
 
             if hType == "FullWord":
-                # TODO progress gain 0
                 self.setEntry(self.questions[self.currentQuestion].answer)
             elif hType == "StartLetter":
                 self.setEntry(self.questions[self.currentQuestion].answer[0])
-            elif hType == "Skip":
-                # TODO
-                pass
+            elif hType == "Check":
+                self.questionObject.colorText(self.questions[self.currentQuestion].answer)
 
     def removeHelpFromUser(self, hType, buttonIndex):
         helpIndex = self.user.getHelpIndex(hType)
@@ -127,7 +132,7 @@ class QuestioningFrame(Frame):
         givenAnswer = self.questionObject.getEntry()
         tempAnswerObj = Answer.Answer(self.logObj, self.questions[self.currentQuestion], givenAnswer)
         self.answers.append(tempAnswerObj)
-        if givenAnswer == self.questions[self.currentQuestion].answer:
+        if givenAnswer.upper() == self.questions[self.currentQuestion].answer.upper():
             self.rightAnswers += 1
 
     def finalizeQuestioning(self):
