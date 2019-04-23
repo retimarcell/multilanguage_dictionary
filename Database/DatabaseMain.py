@@ -1,12 +1,21 @@
 import datetime
+import os
 import mysql.connector as mariadb
+import configparser
+
 
 class Database():
 
     def __init__(self, logObj):
         self.logObj = logObj
         self.logObj.simpleLog('Connecting to database...')
-        self.dbConnection = mariadb.connect(host='nemethi.ddns.net', user='marcell_reti', password='password', port=3306, database='multilanguage_dictionary')
+        config = configparser.ConfigParser()
+        config.read(os.getcwd() + '\\Database\\config.ini')
+        self.dbConnection = mariadb.connect(host=config['CONFIG']['host'],
+                                            user=config['CONFIG']['username'],
+                                            password=config['CONFIG']['password'],
+                                            port=config['CONFIG']['port'],
+                                            database=config['CONFIG']['database'])
         self.logObj.simpleLog('Database connection estabilished.')
 
         self.cursor = self.dbConnection.cursor()

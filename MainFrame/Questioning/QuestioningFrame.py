@@ -13,8 +13,9 @@ class QuestioningFrame(Frame):
         self.root = root
         self.isStart = True
 
-        Frame.__init__(self, master=self.root)
-        self.grid(sticky=NSEW, padx=390, pady=100)
+        Frame.__init__(self, master=self.root, bg='white')
+        self.pack_propagate(0)
+        self.grid(row=2, sticky=NSEW, padx=355, pady=100)
 
         self.amountOf = self.getAmount()
         self.questions = Questions.getQuestions(logObj, self.user, self.amountOf, self.options)
@@ -24,7 +25,6 @@ class QuestioningFrame(Frame):
         self.answers = []
 
         self.createFrames()
-        self.root.bind('<Return>', self.play)
 
         self.play()
 
@@ -38,8 +38,9 @@ class QuestioningFrame(Frame):
     def createFrames(self):
         self.logObj.simpleLog("Creating Frames")
 
-        self.leftFrame = Frame(self)
-        self.rightFrame = Frame(self)
+        self.leftFrame = Frame(self, bg='white')
+        self.rightFrame = Frame(self, bg='white')
+        self.rightFrame.pack_propagate(0)
 
         self.leftFrame.grid(row=0, column=0, padx=(0, 20))
         self.rightFrame.grid(row=0, column=1, padx=(20, 0))
@@ -49,21 +50,25 @@ class QuestioningFrame(Frame):
         self.configureLeftFrame()
 
     def setupButtons(self):
-        self.nextButton = Button(self.leftFrame, text='Következő', command=self.play, relief=GROOVE, font=("Helvetica", 11))
-        self.nextButton.grid(row=3, column=0)
+        self.nextButton = Button(self.leftFrame, text='Következő', command=self.play, bg='white', activebackground='white', font=("Helvetica", 11))
+        self.nextButton.bind('<Return>', self.play)
+        self.nextButton.grid(row=3, columnspan=3, sticky=E, padx=(0,12))
 
     def configureLeftFrame(self):
         self.logObj.simpleLog("Creating left frame")
-        self.questionsLeftLabel = Label(self.rightFrame, font=("Helvetica", 11))
-        self.questionsAnsweredLabel = Label(self.rightFrame, font=("Helvetica", 11))
 
-        self.questionsLeftLabel.grid(row=0, padx=(0, 5))
-        self.questionsAnsweredLabel.grid(row=1, padx=(0, 5))
+        Label(self.rightFrame, text="Haladás", font=("Helvetica", 14), bg='white').grid(row=0, sticky=W)
+        self.questionsLeftLabel = Label(self.rightFrame, font=("Helvetica", 11), bg='white')
+        self.questionsAnsweredLabel = Label(self.rightFrame, font=("Helvetica", 11), bg='white')
+
+        self.questionsLeftLabel.grid(row=1, sticky=W)
+        self.questionsAnsweredLabel.grid(row=2, sticky=W)
 
         self.helpAmounts = []
-        self.fullWordHelpButton = self.setupHelpButton("FullWord", 0)
-        self.startLetterHelpButton = self.setupHelpButton("StartLetter", 1)
-        self.skipHelpButton = self.setupHelpButton("Check", 2)
+        Label(self.rightFrame, text="Segítségek", font=("Helvetica", 14), bg='white').grid(row=3, sticky=W, pady=(20,0))
+        self.fullWordHelpButton = self.setupHelpButton("FullWord", 4)
+        self.startLetterHelpButton = self.setupHelpButton("StartLetter", 5)
+        self.skipHelpButton = self.setupHelpButton("Check", 6)
 
         self.helpButtons = [self.fullWordHelpButton, self.startLetterHelpButton, self.skipHelpButton]
 
@@ -74,9 +79,10 @@ class QuestioningFrame(Frame):
                      text="%s: %i" % (self.user.helps[index].text, self.user.helps[index].amount),
                      font=("Helvetica", 11),
                      width=17,
-                     relief=RIDGE,
-                     command=lambda x=hType, z=rowC: self.helpActivated(x, z))
-        btn.grid(row=rowC+2, padx=(0, 5))
+                     bg='white',
+                     activebackground='white',
+                     command=lambda x=hType, z=rowC-4: self.helpActivated(x, z))
+        btn.grid(row=rowC, sticky=W)
 
         return btn
 
@@ -98,6 +104,7 @@ class QuestioningFrame(Frame):
                 self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label)
             else:
                 self.questionObject = QuestionElement.QuestionElement(self.leftFrame, self.questions[self.currentQuestion].answerLang, self.questions[self.currentQuestion].label, self.questions[self.currentQuestion].sourceLang)
+            self.questionObject.entry.bind('<Return>', self.play)
         else:
             self.finalizeQuestioning()
 
@@ -140,3 +147,8 @@ class QuestioningFrame(Frame):
 
         self.user.lastAnswers = self.answers.copy()
         self.root.finishQuestioning()
+
+    def destroy(self):
+        self.leftFrame.destroy()
+        self.rightFrame.destroy()
+        self.destroy()

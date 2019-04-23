@@ -11,16 +11,20 @@ class AddLanguage:
         self.user = user
 
         self.root = Tk()
+        self.root.configure(bg='white')
+        ws = self.root.winfo_screenwidth() / 2 - 100
+        hs = self.root.winfo_screenheight() / 2 - 300
+        self.root.geometry('+%d+%d' % (ws, hs))
         self.root.resizable(width=FALSE, height=FALSE)
 
-        self.label = Label(self.root, text='Az új nyelv:', font=("Helvetica", 13))
-        self.entry = Entry(self.root, width=25, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13))
+        self.label = Label(self.root, text='Az új nyelv:', font=("Helvetica", 13), bg='white')
+        self.entry = Entry(self.root, width=25, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13), bg='white')
         self.botFrame = Frame(self.root)
-        self.confirmButton = Button(self.botFrame, text="OK", font=("Helvetica", 11), command=self.confirm, relief=GROOVE)
-        self.cancelButton = Button(self.botFrame, text="Mégse", font=("Helvetica", 11), command=self.cancel, relief=GROOVE)
+        self.confirmButton = Button(self.botFrame, text="OK", font=("Helvetica", 11), command=self.confirm, bg='white', activebackground='white')
+        self.cancelButton = Button(self.botFrame, text="Mégse", font=("Helvetica", 11), command=self.cancel, bg='white', activebackground='white')
 
         self.label.grid(row=0, sticky=E+W, pady=(5,0))
-        self.entry.grid(row=1, sticky=E+W, pady=(2,2))
+        self.entry.grid(row=1, sticky=E+W, pady=(2,2), padx=(2,2))
         self.botFrame.grid(row=2, sticky=E)
         self.cancelButton.grid(row=0, column=1, sticky=E, padx=10)
         self.confirmButton.grid(row=0, column=0, sticky=E)

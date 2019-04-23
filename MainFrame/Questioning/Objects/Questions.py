@@ -33,7 +33,7 @@ def fillQuestions(logObj, questions, randomWordIDs, amount, options, user):
                 answerWord, selectedWordID, removableIDs = QET.getRandomAnswerWord(logObj, randomWordIDs, user, selectedLanguage, options.categories)
 
                 if answerWord == " - " and selectedWordID == -1:
-                    removeWordIDs(logObj, None, removeWordIDs, randomWordIDs)
+                    removeWordIDs(logObj, None, removableIDs, randomWordIDs)
                     continue
 
                 sourceWord, sourceLang, isSuccesful = QET.getSourceWord(logObj, user.languages, options.source, selectedWordID, selectedLanguage)

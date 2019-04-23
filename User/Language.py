@@ -78,9 +78,9 @@ class Language:
         index = self.wordIDs.index(wordID)
 
         if amount == 1:
-            self.temporaryWordProgressGains = self.temporaryWordProgressGains + amount
+            self.temporaryWordProgressGains = self.temporaryWordProgressGains + 1
 
-        if (self.progresses[index] != 0 or amount != -1) and (self.progresses[index] != 60 or amount != 1):
+        if (self.progresses[index] != 0 or amount != -1) and (self.progresses[index] != 30 or amount != 1):
             self.progresses[index] = self.progresses[index] + amount
             return True
         return False

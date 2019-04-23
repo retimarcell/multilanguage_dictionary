@@ -11,10 +11,13 @@ class Challenge:
         self.noLanguageRestriction = (self.sourceLanguage == "-" and self.destinationLanguage == "-")
         self.isDone = False
 
-        if sL != "-":
-            self.description = "%s %s: " % (self.description[:-1], self.sourceLanguage)
-        elif dL != "-":
-            self.description = "%s %s: " % (self.description[:-1], self.destinationLanguage)
+    def updateSource(self, sourceL):
+        self.sourceLanguage = sourceL
+        self.description = "%s %s" % (self.description[:-1], self.sourceLanguage)
+
+    def updateDestination(self, destL):
+        self.destinationLanguage = destL
+        self.description = "%s %s" % (self.description[:-1], self.destinationLanguage)
 
     def getHelpAndAmount(self):
         return [self.reward, self.rewardAmount]

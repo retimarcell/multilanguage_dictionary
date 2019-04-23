@@ -10,7 +10,7 @@ class QuestioningDropdown(Menubutton):
         self.user = user
         self.choices = {}
 
-        Menubutton.__init__(self, master=root, width=20, indicatoron=True, relief=GROOVE, borderwidth=1)
+        Menubutton.__init__(self, master=root, width=20, indicatoron=True, relief=GROOVE, borderwidth=1, bg='white', activebackground='white')
         self.menu = Menu(self, tearoff=False)
         self.configure(menu=self.menu)
         self.grid(row=row, column=col, sticky=W, padx=(10,0), pady=(5,0))
@@ -22,12 +22,12 @@ class QuestioningDropdown(Menubutton):
             for langObj in self.user.languages:
                 lang = langObj.language
                 self.choices[lang] = IntVar(value=0)
-                self.menu.add_checkbutton(label=lang, variable=self.choices[lang], onvalue=1, offvalue=0)
+                self.menu.add_checkbutton(label=lang, variable=self.choices[lang], onvalue=1, offvalue=0, background='white')
         else:
             for catObj in self.user.categories:
                 cat = catObj.category
                 self.choices[cat] = IntVar(value=0)
-                self.menu.add_checkbutton(label=cat, variable=self.choices[cat], onvalue=1, offvalue=0)
+                self.menu.add_checkbutton(label=cat, variable=self.choices[cat], onvalue=1, offvalue=0, background='white')
 
     def getSelectedOptions(self):
         self.logObj.simpleLog("Returning Selected options from %s" % self.type)
@@ -56,7 +56,8 @@ class QuestioningOptionMenu(OptionMenu):
         self.selected.set(options[0])
 
         OptionMenu.__init__(self, root, self.selected, *options)
-        self.configure(width=20, indicatoron=True, relief=GROOVE, borderwidth=1)
+        self.configure(width=20, indicatoron=True, relief=GROOVE, bg='white', borderwidth=1, activebackground='white')
+        self["menu"].config(bg='white')
         self.grid(row=row, column=col, sticky=W, padx=(8,0), pady=(5,0))
 
     def getSelectedOption(self):

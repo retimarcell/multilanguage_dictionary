@@ -8,8 +8,8 @@ class Answer:
         self.sourceLang =   questionObj.sourceLang
         self.answerLang =   questionObj.answerLang
         self.label =        questionObj.label
-        self.answer =       questionObj.answer.upper()
-        self.givenAnswer =  givenAnswer.upper()
+        self.answer =       questionObj.answer.lower()
+        self.givenAnswer =  givenAnswer.lower()
 
         self.analyze()
 

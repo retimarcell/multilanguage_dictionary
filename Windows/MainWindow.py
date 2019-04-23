@@ -26,15 +26,18 @@ class MainWindow:
 
         self.root = Tk()
         self.root.title("Többnyelvű szótár")
+        self.root.configure(bg='white')
         self.root.resizable(width=FALSE, height=FALSE)
-        self.root.geometry("1200x700")
+        x = self.root.winfo_screenwidth() / 2 - 600
+        y = self.root.winfo_screenheight() / 2 - 350
+        self.root.geometry("1200x620+%d+%d" % (x, y))
         self.root.columnconfigure((0, 1, 2, 3), weight=1, minsize=336)
         self.root.grid_rowconfigure(1, weight=1)
         self.logObj.simpleLog("Root created")
 
     def createHeaderFrame(self):
         self.logObj.simpleLog("Creating header frame")
-        self.buttonFrame = Frame(self.root)
+        self.buttonFrame = Frame(self.root, bg='white')
         self.buttonFrame.pack()
         self.headerButtons = []
 
@@ -50,7 +53,7 @@ class MainWindow:
         self.logObj.simpleLog("Header created")
 
     def createMainFrame(self):
-        self.mainFrame = Frame(self.root, background="black")
+        self.mainFrame = Frame(self.root, bg='white')
         self.mainFrame.pack_propagate(0)
         self.mainFrame.pack(fill=BOTH, expand=1)
         self.activateFrame(0, True)

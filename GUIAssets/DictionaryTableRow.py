@@ -21,7 +21,7 @@ class TableHeader:
         for e in self.headers:
             e.destroy()
         for i in range(len(self.user.languages)):
-            e = Button(self.root, text=self.user.languages[i].language.upper(), borderwidth=2, relief="solid", width=19, font=("Helvetica", 12))
+            e = Button(self.root, text=self.user.languages[i].language.upper(), borderwidth=2, relief="solid", width=19, font=("Helvetica", 12), bg='white')
             e.bind('<Button-1>', lambda x: 'break')
             e.grid(row=0, column=i, pady=(12,0))
             if isDictionary:
@@ -58,7 +58,7 @@ class TableRow:
                 self.buttons.append(Button(self.root, text=wordDataArr[0], borderwidth=1, relief=SOLID, width=22, font=("Helvetica", 10)))
             except TclError:
                 pass
-            #self.setProgressColor(self.buttons[i], wordDataArr[1])
+            self.setProgressColor(self.buttons[i], wordDataArr[1])
             self.buttons[i].grid(row=rowNum, column=i)
             self.buttons[i].bind('<Button-1>', lambda e: 'break')
             if isDictionary:
@@ -69,16 +69,16 @@ class TableRow:
         return self.buttons[i].cget('text')
 
     def setProgressColor(self, button, progress):
-        if progress < 20:
-            button.configure(bg='red', activebackground='red')
-        elif 20 <= progress < 40:
-            button.configure(bg='yellow', activebackground='yellow')
+        if progress < 10:
+            button.configure(bg='#FC2B00', activebackground='#FC2B00')
+        elif 10 <= progress < 20:
+            button.configure(bg='#F6EF0C', activebackground='#F6EF0C')
         else:
-            button.configure(bg='green', activebackground='green')
+            button.configure(bg='#16D300', activebackground='#16D300')
 
     def changeButton(self, index, newValue):
         self.buttons[index].configure(text=newValue)
-        #self.setProgressColor(self.buttons[index], 0)
+        self.setProgressColor(self.buttons[index], 0)
 
     def showRightClickOptions(self, event, rowNum):
         popup = Menu(self.root, tearoff=0)

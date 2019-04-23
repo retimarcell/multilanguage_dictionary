@@ -12,11 +12,17 @@ class ModifyEntryWindow:
         self.user = user
 
         self.root = Tk()
+        self.root.configure(bg='white')
+        ws = self.root.winfo_screenwidth() / 2 - 300
+        hs = self.root.winfo_screenheight() / 2 - 300
+        self.root.geometry('+%d+%d' % (ws, hs))
+        self.root.resizable(width=FALSE, height=FALSE)
+
         self.wordLabels = []
         self.wordNewEntries = []
         self.wordChangeButtons = []
-        self.middleFrame = Frame(self.root)
-        self.bottomFrame = Frame(self.root)
+        self.middleFrame = Frame(self.root, bg='white')
+        self.bottomFrame = Frame(self.root, bg='white')
         self.confirmButton = None
         self.cancelButton = None
 
@@ -30,15 +36,15 @@ class ModifyEntryWindow:
 
         for i in range(len(self.tableRow.buttons)):
             textTemp = self.tableRow.getButtonText(i)
-            self.wordLabels.append(Label(self.root, text=textTemp, font=("Helvetica", 13)))
-            self.wordNewEntries.append(Entry(self.root, width=25, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13)))
-            self.wordChangeButtons.append(Button(self.root, text='Megváltoztat', command=lambda x=i: self.changeLabelBasedOnEntry(x), relief=GROOVE, font=("Helvetica", 11)))
+            self.wordLabels.append(Label(self.root, text="%s (%s)" % (textTemp, self.user.languages[i].language), font=("Helvetica", 13), bg='white'))
+            self.wordNewEntries.append(Entry(self.root, width=25, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13), bg='white'))
+            self.wordChangeButtons.append(Button(self.root, text='Megváltoztat', command=lambda x=i: self.changeLabelBasedOnEntry(x), bg='white', font=("Helvetica", 11)))
 
-        Label(self.middleFrame, text="Kategóriák:", font=("Helvetica", 13)).grid(row=0, column=0, sticky=E, padx=(0,10))
+        Label(self.middleFrame, text="Kategóriák:", font=("Helvetica", 13), bg='white').grid(row=0, column=0, sticky=E, padx=(0,10))
         self.categories = CategoryDropdown.CategorySelectionDropdown(self.logObj, self.middleFrame, self.user, self.tableRow.wordID)
 
-        self.confirmButton = Button(self.bottomFrame, text='Véglegesités', command=self.confimChanges, relief=GROOVE, font=("Helvetica", 11))
-        self.cancelButton = Button(self.bottomFrame, text='Mégse', command=self.cancelChanges, relief=GROOVE, font=("Helvetica", 11))
+        self.confirmButton = Button(self.bottomFrame, text='Véglegesités', command=self.confimChanges, bg='white', font=("Helvetica", 11), activebackground='white')
+        self.cancelButton = Button(self.bottomFrame, text='Mégse', command=self.cancelChanges, bg='white', font=("Helvetica", 11), activebackground='white')
 
     def placeWidgets(self):
         self.logObj.simpleLog("Placing widgets on grid...")
@@ -60,7 +66,7 @@ class ModifyEntryWindow:
     def changeLabelBasedOnEntry(self, index):
         tempText = self.wordNewEntries[index].get()
         self.logObj.simpleLog("Changing Label based on entry: [%s] --> [%s]" % (self.wordLabels[index]['text'], tempText))
-        self.wordLabels[index].configure(text=tempText)
+        self.wordLabels[index].configure(text="%s (%s)" % (tempText, self.user.languages[index].language))
         self.wordNewEntries[index].delete(0, END)
         self.root.update()
 
@@ -70,18 +76,17 @@ class ModifyEntryWindow:
         if self.confirmChangesPopup():
             for i in range(len(self.tableRow.buttons)):
                 newValue = self.wordLabels[i].cget('text')
-                if self.tableRow.getButtonText(i) != newValue:
-                    self.updateWord(i, newValue)
+                word = newValue.split()[0]
+                if self.tableRow.getButtonText(i) != word:
+                    self.updateWord(i, word)
             #Add to category
             selectedCategories = self.categories.getSelectedOptions()
-            print(selectedCategories)
             for selected in selectedCategories:
                 for cat in self.user.categories:
                     if cat.category == selected and self.tableRow.wordID not in cat.wordIDs:
                         self.addWordToCategory(cat)
             #Remove from category
             notSelectedCategories = self.categories.getNotSelectedOptions()
-            print(notSelectedCategories)
             for notSelected in notSelectedCategories:
                 for cat in self.user.categories:
                     if cat.category == notSelected and self.tableRow.wordID in cat.wordIDs:

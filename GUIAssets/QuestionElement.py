@@ -6,20 +6,24 @@ class QuestionElement:
     def __init__(self, root, lang, label, sourceLang=""):
 
         if sourceLang == "":
-            text = label
+            self.sourceLangLabel = Label(root, text="?", font=("Helvetica", 15), bg='white')
         else:
-            text = label + " (" + sourceLang + ")"
+            self.sourceLangLabel = Label(root, text=sourceLang.capitalize(), font=("Helvetica", 11), bg='white')
 
-        self.sourceWord = Label(root, text=text.capitalize(), font=("Helvetica", 15))
-        self.langLabel = Label(root, text=lang.capitalize(), font=("Helvetica", 10))
-        self.entry = Entry(root, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13))
+        self.sourceWord = Label(root, text=label.capitalize(), font=("Helvetica", 15), bg='white')
+        self.midLabel = Label(root, text="-->", font=("Helvetica", 11), bg='white')
+        self.langLabel = Label(root, text=lang.capitalize(), font=("Helvetica", 11), bg='white')
+        self.entry = Entry(root, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13), bg='white')
         self.noProgressGain = False
 
-        self.langLabel.grid(row=2, column=0, pady=(0,5))
-        self.sourceWord.grid(row=0, column=0, pady=(0,5))
-        self.entry.grid(row=1, column=0, ipady=6, ipadx=3, pady=(0,5))
+        self.sourceWord.grid(row=0, columnspan=3, pady=(0,5), sticky=W+E+S+N)
+        self.sourceLangLabel.grid(row=1, column=0, pady=(0,5), sticky=E)
+        self.midLabel.grid(row=1, column=1, pady=(0,5), padx=(3,3), sticky=W+E)
+        self.langLabel.grid(row=1, column=2, pady=(0,5), sticky=W)
+        self.entry.grid(row=2, columnspan=3, ipady=6, ipadx=3, pady=(0,5), sticky=W+E+S+N)
 
         self.entry.bind('<KeyPress>', self.colorToBlack)
+        self.entry.focus()
 
     def getEntry(self):
         return self.entry.get()
@@ -38,3 +42,5 @@ class QuestionElement:
         self.langLabel.destroy()
         self.sourceWord.destroy()
         self.entry.destroy()
+        self.sourceLangLabel.destroy()
+        self.midLabel.destroy()

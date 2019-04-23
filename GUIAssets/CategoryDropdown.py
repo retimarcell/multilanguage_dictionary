@@ -7,7 +7,7 @@ class CategoryDropdown(OptionMenu):
         self.logObj = logObj
         self.logObj.simpleLog("Creating Category Dropdown")
         self.user = user
-        self.options = []
+        self.options = [" - "]
 
         for cat in self.user.categories:
             self.options.append(cat.category)
@@ -16,8 +16,9 @@ class CategoryDropdown(OptionMenu):
         self.selected.set(self.options[0])
 
         OptionMenu.__init__(self, root, self.selected, *self.options, command=mainRoot.displayTable)
-        self.configure(width=20, indicatoron=True, relief=RIDGE, borderwidth=1)
-        self.grid(row=0, column=0)
+        self.configure(width=20, indicatoron=True, relief=RIDGE, borderwidth=1, bg='white', activebackground='white')
+        self["menu"].config(bg='white')
+        self.grid(row=0, column=2, sticky=S)
 
 
 class CategorySelectionDropdown(Menubutton):
@@ -30,7 +31,7 @@ class CategorySelectionDropdown(Menubutton):
         self.wordID = wordID
         self.choices = {}
 
-        Menubutton.__init__(self, self.root, width=32, indicatoron=True, relief=GROOVE, borderwidth=1)
+        Menubutton.__init__(self, self.root, width=32, indicatoron=True, relief=GROOVE, borderwidth=1, bg='white', activebackground='white')
         self.menu = Menu(self, tearoff=False)
         self.configure(menu=self.menu)
         self.grid(row=0, column=1, sticky=E, padx=(0,108))
@@ -47,7 +48,7 @@ class CategorySelectionDropdown(Menubutton):
                 s.set(0)
 
             self.choices[category] = s
-            self.menu.add_checkbutton(label=category, variable=self.choices[category], onvalue=1, offvalue=0)
+            self.menu.add_checkbutton(label=category, variable=self.choices[category], onvalue=1, offvalue=0, background='white')
 
     def getSelectedOptions(self):
         returnArray = []

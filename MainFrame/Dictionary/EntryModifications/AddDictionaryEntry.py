@@ -13,56 +13,54 @@ class AddEntry:
         self.counter = 0
 
         self.root = Tk()
-        self.root.geometry("420x80")
-        self.root.resizable(width=FALSE, height=FALSE)
 
-        self.frame = Frame(self.root)
+        self.frame = Frame(self.root, bg='white')
         self.frame.pack()
-        self.topFrame = Frame(self.frame)
-        self.bottomFrame = Frame(self.frame)
+        self.topFrame = Frame(self.frame, bg='white')
+        self.bottomFrame = Frame(self.frame, bg='white')
         self.topFrame.grid(row=0, sticky=E+W, pady=(10,0))
         self.bottomFrame.grid(row=1, sticky=E)
+        self.additionFrames = []
 
-        self.label = Label(self.topFrame, text="%s:" % self.user.languages[0].language.capitalize(), font=("Helvetica", 15))
-        self.entry = Entry(self.topFrame, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13))
-        self.forwardButton = Button(self.bottomFrame, text="Következő", command=self.play, font=("Helvetica", 11), relief=GROOVE)
-        self.cancelButton = Button(self.bottomFrame, text="Mégse", command=self.cancelAddition, font=("Helvetica", 11), relief=GROOVE)
+        for i in range(len(self.user.languages)):
+            self.additionFrames.append(AdditionFrame(self.topFrame, self.user.languages[i].language, i))
 
-        self.label.grid(row=0, column=0, padx=(0,5))
-        self.entry.grid(row=0, column=1)
+        self.forwardButton = Button(self.bottomFrame, text="Befejezés", command=self.play, font=("Helvetica", 11), bg='white', activebackground='white')
+        self.cancelButton = Button(self.bottomFrame, text="Mégse", command=self.cancelAddition, font=("Helvetica", 11), bg='white', activebackground='white')
+
         self.cancelButton.grid(row=0, column=1, sticky=E, padx=10)
         self.forwardButton.grid(row=0, column=0, sticky=E)
 
         self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[0].language)
 
         self.root.focus_force()
-        self.entry.focus()
+        self.additionFrames[0].entry.focus()
         self.root.bind('<Return>', self.play)
+
+        ws = self.root.winfo_screenwidth() / 2 - 200
+        hs = self.root.winfo_screenheight() / 2 - 300
+        self.root.geometry('+%d+%d' % (ws, hs))
+        self.root.resizable(width=FALSE, height=FALSE)
+        self.root.configure(bg='white')
 
         self.root.mainloop()
 
     def play(self, event=None):
-        temp = self.entry.get()
-        self.addedWords.append(temp)
-        self.logObj.simpleLog("Added \"%s\" for %s" % (temp, self.user.languages[self.counter].language))
 
-        if (self.counter + 1) != len(self.user.languages):
-            self.counter += 1
-            self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[self.counter].language)
-            self.label['text'] = "%s:" % self.user.languages[self.counter].language
-            self.entry.delete(0, END)
-            if (self.counter+1) == len(self.user.languages):
-                self.forwardButton.config(text="Befejezés")
-        else:
-            self.logObj.simpleLog("Words gathered.")
-            self.pushNewWordsToDatabase()
-            self.saveForUser()
-            self.user.database.setNextWordID()
+        for frame in self.additionFrames:
+            temp = frame.entry.get()
+            self.logObj.simpleLog("Added word: %s")
+            self.addedWords.append(temp)
 
-            self.logObj.simpleLog("Word addition finished.")
-            showinfo("Siker!", "Sikeresen hozzáadva!")
+        self.logObj.simpleLog("Words gathered.")
+        self.pushNewWordsToDatabase()
+        self.saveForUser()
+        self.user.database.setNextWordID()
 
-            self.root.destroy()
+        self.logObj.simpleLog("Word addition finished.")
+        showinfo("Siker!", "Sikeresen hozzáadva!")
+
+        self.root.destroy()
 
     def pushNewWordsToDatabase(self):
         self.logObj.simpleLog("Adding words to database...")
@@ -94,3 +92,15 @@ class AddEntry:
         else:
             self.root.focus_force()
             self.logObj.simpleLog("Word addition cancel cancelled.")
+
+
+class AdditionFrame(Frame):
+
+    def __init__(self, root, label, rowN):
+        Frame.__init__(self, master=root, bg='white')
+        self.grid(row=rowN, sticky=E)
+
+        self.label = Label(self, text="%s:" % label.capitalize(), font=("Helvetica", 15), bg='white')
+        self.entry = Entry(self, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13), bg='white')
+        self.label.grid(row=0, column=0, padx=(4,10), sticky=E)
+        self.entry.grid(row=0, column=1, padx=(0,4), sticky=E)

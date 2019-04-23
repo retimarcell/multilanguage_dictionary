@@ -1,0 +1,20 @@
+3.1 Alkalmazási felépítés
+
+A Többnyelvű szótár kliensoldalon működteti mind a front- és back-end-et, az adatok bárholi elérése érdekében pedig egy adatbázis szerveren tárolja el az adatokat, így biztosítva a kényelmesebb felhasználói élményt. A kommunikációt a MySQL.Connector[?] Python modul biztosítja. A program induláskor példányosít egy objektumot a kapcsolattartáshoz, amely a felhasználói interakciók esetén intézi az adatbázis lekérdezéseit és módosításait.
+
+3.2.1? A webszerver
+
+Az adatbázis szerver alapja a MariaDB Platform[?]. Ez egy nyílt forráskódú, SQL-alapú relációsadatbázis-kezelő szerver, amely a MySQL egy fork-ja. Az erősségei közé tartozik a kiváló teljesítmény és az igény szerinti skálázhatóság, amely a valós idejű kommunikációban jelentős szerepet játszanak. A MariaDB-hez nincsen modul a Python könyvtárai között, de mivel célja, hogy a MySQL-lel a kompatibilitása magas legyen, ezért a MySQL Connector illesztőprogramját használjuk a kommunikáció kiépítésére és vezérlésére. 
+
+3.2.2? A back-end
+
+A szoftver Python 3.6.5[?]-ben íródott, mely egy nagyon magas szintű, általános célú, interpretált nyelv. Egyik nagy előnye, hogy egyszerre támogatja a funkcionális, az objektumorientált, az imperatív és procedurális programozási paradmigmákat, melyekből az első kettőt ötvözve épül fel a program implementációja. 
+
+3.2.3? A front-end
+
+Az asztali alkalmazás front-end-re és back-end-re egyaránt Python 3.6.5[?]-ben íródott, mely egy nagyon magas szintű, általános célú, interpretált nyelv. Ötvözve a lehetőségeit, a program egyaránt alkalmazza az objektumorientált és a funkcionális programozási paradigmákat. 
+A vizuális reprezentációt a Python de facto grafikus interface eszköztára, a Tkinter[?] könyvtár, és két alkönyvtára, a ttk[?] és a messagebox[?] biztosítja. A Tcl interpretert ágyazza be a Python interpreterbe, és a hívásai átalakítódnak Tcl parancsokká.
+
+3.3 A webszerver architektúrája
+
+A Database/config.ini fájlban adhatóak meg az adatbázis-kapcsolathoz szükséges adatok. MariaDB esetén csak egy adatbázis-kezelő szerverhez kapcsolódunk, így ezen belül meg kell adni a megfelelő adatbázist is - ez a 'multilanguage_dictionary'.

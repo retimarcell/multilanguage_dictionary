@@ -138,10 +138,10 @@ class User:
                                                                0))
                     if self.challenges[-1].sourceLanguage == "Y":
                         i = random.randint(0, len(self.languages)-1)
-                        self.challenges[-1].sourceLanguage = self.languages[i].language
+                        self.challenges[-1].updateSource(self.languages[i].language)
                     if self.challenges[-1].destinationLanguage == "Y":
                         i = random.randint(0, len(self.languages)-1)
-                        self.challenges[-1].destinationLanguage = self.languages[i].language
+                        self.challenges[-1].updateDestination(self.languages[i].language)
 
                     self.database.insertIntoTable("Challenge_Ongoings", [self.challenges[-1].description,
                                                                          self.challenges[-1].sourceLanguage,
