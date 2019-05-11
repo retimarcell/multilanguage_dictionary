@@ -52,7 +52,7 @@ class AddEntry:
             t = frame.entry.get()
             if t != "":
                 isAllNone = False
-                entries.append(t)
+            entries.append(t)
 
         if isAllNone:
             showerror("Hiba!", "Legalább egy szónak adjon meg egy bemenetet!")
@@ -91,6 +91,7 @@ class AddEntry:
 
     def saveForUser(self):
         self.user.wordIDs.append(self.user.database.nextWordID)
+        print(self.addedWords)
         for i in range(len(self.user.languages)):
             self.user.languages[i].addWord(self.user.database.nextWordID, self.addedWords[i])
 
