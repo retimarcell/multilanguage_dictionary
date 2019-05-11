@@ -5,6 +5,7 @@ from MainFrame.Dictionary import DictionaryHandler as dh
 from MainFrame.Categories import CategoriesHandler as ch
 from MainFrame.Profile import ProfileHandler as ph
 
+
 class MainWindow:
 
     def __init__(self, logObj, user, database):
@@ -67,7 +68,7 @@ class MainWindow:
         if id == 0:
             self.showedFrame = dh.DictionaryFrame(self.logObj, self.mainFrame, self.user)
         elif id == 1:
-            self.showedFrame = qh.QuestioningFrame(self.logObj, self.mainFrame, self.user)
+            self.showedFrame = qh.QuestioningHandlerFrame(self.logObj, self.mainFrame, self.user)
         elif id == 2:
             self.showedFrame = ch.CategoriesFrame(self.logObj, self.mainFrame, self.user)
         elif id == 3:

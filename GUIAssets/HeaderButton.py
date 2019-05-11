@@ -1,5 +1,6 @@
 from tkinter import *
 
+
 class HeaderButton(Button):
 
     def __init__(self, logObj, root, title, pos):

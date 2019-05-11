@@ -13,6 +13,7 @@ class AddEntry:
         self.counter = 0
 
         self.root = Tk()
+        self.root.title("Szó hozzáadás")
 
         self.frame = Frame(self.root, bg='white')
         self.frame.pack()
@@ -25,7 +26,7 @@ class AddEntry:
         for i in range(len(self.user.languages)):
             self.additionFrames.append(AdditionFrame(self.topFrame, self.user.languages[i].language, i))
 
-        self.forwardButton = Button(self.bottomFrame, text="Befejezés", command=self.play, font=("Helvetica", 11), bg='white', activebackground='white')
+        self.forwardButton = Button(self.bottomFrame, text="Hozzáadás", command=self.play, font=("Helvetica", 11), bg='white', activebackground='white')
         self.cancelButton = Button(self.bottomFrame, text="Mégse", command=self.cancelAddition, font=("Helvetica", 11), bg='white', activebackground='white')
 
         self.cancelButton.grid(row=0, column=1, sticky=E, padx=10)
@@ -33,34 +34,42 @@ class AddEntry:
 
         self.logObj.simpleLog("Waiting for word addition for language: %s" % self.user.languages[0].language)
 
-        self.root.focus_force()
-        self.additionFrames[0].entry.focus()
-        self.root.bind('<Return>', self.play)
-
         ws = self.root.winfo_screenwidth() / 2 - 200
         hs = self.root.winfo_screenheight() / 2 - 300
         self.root.geometry('+%d+%d' % (ws, hs))
         self.root.resizable(width=FALSE, height=FALSE)
         self.root.configure(bg='white')
 
+        self.additionFrames[0].entry.focus_force()
+        self.root.bind('<Return>', self.play)
+
         self.root.mainloop()
 
     def play(self, event=None):
-
+        entries = []
+        isAllNone = True
         for frame in self.additionFrames:
-            temp = frame.entry.get()
-            self.logObj.simpleLog("Added word: %s")
-            self.addedWords.append(temp)
+            t = frame.entry.get()
+            if t != "":
+                isAllNone = False
+                entries.append(t)
 
-        self.logObj.simpleLog("Words gathered.")
-        self.pushNewWordsToDatabase()
-        self.saveForUser()
-        self.user.database.setNextWordID()
+        if isAllNone:
+            showerror("Hiba!", "Legalább egy szónak adjon meg egy bemenetet!")
+        else:
+            for entry in entries:
+                self.logObj.simpleLog("Added word: %s")
+                self.addedWords.append(entry)
 
-        self.logObj.simpleLog("Word addition finished.")
-        showinfo("Siker!", "Sikeresen hozzáadva!")
+            self.logObj.simpleLog("Words gathered.")
+            self.pushNewWordsToDatabase()
+            self.saveForUser()
+            self.user.database.setNextWordID()
 
-        self.root.destroy()
+            self.logObj.simpleLog("Word addition finished.")
+            showinfo("Siker!", "Sikeresen hozzáadva!")
+            self.root.quit()
+            self.root.destroy()
 
     def pushNewWordsToDatabase(self):
         self.logObj.simpleLog("Adding words to database...")
@@ -74,7 +83,7 @@ class AddEntry:
         tableName = "l_" + self.user.languages[index].language
         self.logObj.simpleLog("Adding \"%s\" to \"%s\" database..." % (newWord, tableName))
         values = []
-        values.append(len(self.user.wordIDs) + 1)
+        values.append(self.user.database.nextWordID)
         values.append(newWord)
         values.append(0)
 

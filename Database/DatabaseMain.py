@@ -4,7 +4,7 @@ import mysql.connector as mariadb
 import configparser
 
 
-class Database():
+class Database:
 
     def __init__(self, logObj):
         self.logObj = logObj
@@ -164,7 +164,7 @@ class Database():
 
     def updateLanguageXp(self, lang, user, newXp):
         self.logObj.simpleLog("Creating update statement for language xp")
-        statement = "update Languages set xp=%i where user='%s' and language='%s'" % (newXp, user, lang)
+        statement = "update Languages set xp=%i where username='%s' and language='%s'" % (newXp, user, lang)
 
         self.executeStatement(statement)
         self.dbConnection.commit()

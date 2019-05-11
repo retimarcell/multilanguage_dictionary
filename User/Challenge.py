@@ -13,11 +13,11 @@ class Challenge:
 
     def updateSource(self, sourceL):
         self.sourceLanguage = sourceL
-        self.description = "%s %s" % (self.description[:-1], self.sourceLanguage)
+        self.description = "%s: %s" % (self.description, self.sourceLanguage)
 
     def updateDestination(self, destL):
         self.destinationLanguage = destL
-        self.description = "%s %s" % (self.description[:-1], self.destinationLanguage)
+        self.description = "%s: %s" % (self.description, self.destinationLanguage)
 
     def getHelpAndAmount(self):
         return [self.reward, self.rewardAmount]

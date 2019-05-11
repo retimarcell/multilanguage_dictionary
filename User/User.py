@@ -12,8 +12,8 @@ class User:
         self.xp = self.database.simpleSelectFromTable("Users", ["username"], [self.username])[0][3]
         self.level = 0
         self.isFirstTime = isFirstTime
-        self.languages = []
         self.wordIDs = []
+        self.languages = []
         self.categories = []
         self.helps = []
         self.challenges = []
@@ -43,7 +43,7 @@ class User:
 
     def fillLanguages(self):
         self.logObj.simpleLog("Filling languages...")
-        arr = self.database.simpleSelectFromTable("Languages", ["user"], [self.username])
+        arr = self.database.simpleSelectFromTable("Languages", ["username"], [self.username])
         for ele in arr:
             self.languages.append(Language.Language(ele[0], ele[2]))
 
@@ -67,7 +67,7 @@ class User:
 
     def fillCategories(self):
         self.logObj.simpleLog("Filling categories...")
-        selectResult = self.database.simpleSelectFromTable("Categories", ["user"], [self.username])
+        selectResult = self.database.simpleSelectFromTable("Categories", ["username"], [self.username])
 
         for categoryElement in selectResult:
             index = self.getCategoryIndex(categoryElement[0])

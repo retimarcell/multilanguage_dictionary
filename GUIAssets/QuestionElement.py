@@ -8,12 +8,12 @@ class QuestionElement:
         if sourceLang == "":
             self.sourceLangLabel = Label(root, text="?", font=("Helvetica", 15), bg='white')
         else:
-            self.sourceLangLabel = Label(root, text=sourceLang.capitalize(), font=("Helvetica", 11), bg='white')
+            self.sourceLangLabel = Label(root, text=sourceLang.capitalize(), font=("Helvetica", 15), bg='white')
 
-        self.sourceWord = Label(root, text=label.capitalize(), font=("Helvetica", 15), bg='white')
+        self.sourceWord = Label(root, text=label.capitalize(), font=("Helvetica", 23), bg='white')
         self.midLabel = Label(root, text="-->", font=("Helvetica", 11), bg='white')
-        self.langLabel = Label(root, text=lang.capitalize(), font=("Helvetica", 11), bg='white')
-        self.entry = Entry(root, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13), bg='white')
+        self.langLabel = Label(root, text=lang.capitalize(), font=("Helvetica", 15), bg='white')
+        self.entry = Entry(root, width=30, borderwidth=2, fg='#000000', relief=GROOVE, font=("Helvetica", 13), bg='white', justify='center')
         self.noProgressGain = False
 
         self.sourceWord.grid(row=0, columnspan=3, pady=(0,5), sticky=W+E+S+N)

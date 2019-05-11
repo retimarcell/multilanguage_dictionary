@@ -11,7 +11,7 @@ def deleteLanguage(logObj, user, language):
 
 def deleteFromDatabase(logObj, user, language):
     logObj.simpleLog("Deleting [%s] from Languages database..." % language.language)
-    user.database.deleteRow("Languages", ["language", "user"], [language.language, user.username])
+    user.database.deleteRow("Languages", ["language", "username"], [language.language, user.username])
 
     logObj.simpleLog("Dropping language table...")
     user.database.dropTable("l_%s" % language.language)

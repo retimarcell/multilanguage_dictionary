@@ -7,21 +7,28 @@ class Logger:
 
     def __init__(self):
         self.name = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S") + "log.log"
-        self.currDir = os.getcwd()
-        self.logPath = self.currDir + "//LOGS//" + self.name
-        self.reportPath = self.currDir + "//Reports//"
+        self.currentDirectory = "C://Multilanguage_Dictionary"
 
-        if not os.path.exists(self.currDir + "//LOGS"):
-            os.makedirs(self.currDir + "//LOGS")
+        if not os.path.exists(self.currentDirectory):
+            os.makedirs(self.currentDirectory)
 
-        if not os.path.exists(self.currDir + "//Reports"):
-            os.makedirs(self.currDir + "//Reports")
+        self.logPath = self.currentDirectory + "//LOGS//" + self.name
+        self.reportPath = self.currentDirectory + "//Reports//"
+
+        if not os.path.exists(self.currentDirectory + "//LOGS"):
+            os.makedirs(self.currentDirectory + "//LOGS")
+
+        if not os.path.exists(self.currentDirectory + "//Reports"):
+            os.makedirs(self.currentDirectory + "//Reports")
 
         self.logFile = open(self.logPath, 'w')
         self.simpleLog("Logger initialized")
 
     def simpleLog(self, message):
-        self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S ") + message + "\n")
+        try:
+            self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S ") + message + "\n")
+        except UnicodeEncodeError:
+            pass
 
     def printAndLog(self, message):
         print(datetime.datetime.now().strftime("%Y_%m_%d_%I:%M:%S ") + message)
@@ -42,7 +49,10 @@ class Logger:
                 msg += "password=***** "
             else:
                 msg += ele + " "
-        self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S [DB STATEMENT] ") + msg + "\n")
+        try:
+            self.logFile.write(datetime.datetime.now().strftime("%Y_%m_%d_%H:%M:%S [DB STATEMENT] ") + msg + "\n")
+        except UnicodeEncodeError:
+            pass
 
     def arrayItemsLog(self, message, arr):
         msg = message

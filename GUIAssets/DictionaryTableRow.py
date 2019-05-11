@@ -20,8 +20,9 @@ class TableHeader:
     def refresh(self, isDictionary=True):
         for e in self.headers:
             e.destroy()
+        self.headers = []
         for i in range(len(self.user.languages)):
-            e = Button(self.root, text=self.user.languages[i].language.upper(), borderwidth=2, relief="solid", width=19, font=("Helvetica", 12), bg='white')
+            e = Button(self.root, text=self.user.languages[i].language.upper(), borderwidth=1, relief="solid", width=22, font=("Helvetica", 10), bg='white')
             e.bind('<Button-1>', lambda x: 'break')
             e.grid(row=0, column=i, pady=(12,0))
             if isDictionary:
@@ -38,17 +39,20 @@ class TableHeader:
 
     def delete(self, column):
         dl.deleteLanguage(self.logObj, self.user, self.headers[column].cget('text'))
+        self.headers[column].destroy()
+        self.headers.pop(column)
         self.mainRoot.displayTable()
 
 
 class TableRow:
 
-    def __init__(self, logobj, wordID, user, root, rowNum, isDictionary=True):
+    def __init__(self, logobj, wordID, user, root, mainRoot, rowNum, isDictionary=True):
         self.logObj = logobj
         self.logObj.simpleLog("Creating table row for wordID: %i" % wordID)
         self.wordID = wordID
         self.root = root
         self.user = user
+        self.mainRoot = mainRoot
 
         self.buttons = []
 
@@ -95,8 +99,8 @@ class TableRow:
 
     def delete(self, rowNum):
         dde.deleteWholeEntry(self.logObj, self.user, self)
-        self.root.tableRows.pop(rowNum)
-        self.root.displayTable()
+        self.mainRoot.tableRows.pop(rowNum)
+        self.mainRoot.displayTable()
 
     def destroyButtons(self):
         for button in self.buttons:

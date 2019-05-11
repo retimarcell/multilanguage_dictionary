@@ -12,6 +12,7 @@ class ModifyEntryWindow:
         self.user = user
 
         self.root = Tk()
+        self.root.title("Szó módosítása")
         self.root.configure(bg='white')
         ws = self.root.winfo_screenwidth() / 2 - 300
         hs = self.root.winfo_screenheight() / 2 - 300
@@ -29,6 +30,8 @@ class ModifyEntryWindow:
         self.setupWindow()
         self.placeWidgets()
 
+        self.wordNewEntries[0].focus_force()
+
         self.root.mainloop()
 
     def setupWindow(self):
@@ -41,7 +44,19 @@ class ModifyEntryWindow:
             self.wordChangeButtons.append(Button(self.root, text='Megváltoztat', command=lambda x=i: self.changeLabelBasedOnEntry(x), bg='white', font=("Helvetica", 11)))
 
         Label(self.middleFrame, text="Kategóriák:", font=("Helvetica", 13), bg='white').grid(row=0, column=0, sticky=E, padx=(0,10))
-        self.categories = CategoryDropdown.CategorySelectionDropdown(self.logObj, self.middleFrame, self.user, self.tableRow.wordID)
+        self.categories = CategoryDropdown.CategorySelectionDropdown(self.logObj, self.middleFrame, self.user, self.tableRow.wordID, self)
+        self.categoriesCheckLabel = Label(self.middleFrame, text="Kiválasztott kategóriák: ", font=("Helvetica", 13), bg='white')
+
+        text = ""
+        for cat in self.user.categories:
+            if self.tableRow.wordID in cat.wordIDs:
+                text = "%s%s " % (text, cat.category)
+        if len(text) != 0:
+            text = text[:-1]
+        self.categoriesListLabel = Label(self.middleFrame, text=text, font=("Helvetica", 13), bg='white')
+
+        self.categoriesCheckLabel.grid(row=1, column=0, sticky=E, padx=(0,10))
+        self.categoriesListLabel.grid(row=1, column=1, sticky=W, padx=(0,10))
 
         self.confirmButton = Button(self.bottomFrame, text='Véglegesités', command=self.confimChanges, bg='white', font=("Helvetica", 11), activebackground='white')
         self.cancelButton = Button(self.bottomFrame, text='Mégse', command=self.cancelChanges, bg='white', font=("Helvetica", 11), activebackground='white')
@@ -79,18 +94,13 @@ class ModifyEntryWindow:
                 word = newValue.split()[0]
                 if self.tableRow.getButtonText(i) != word:
                     self.updateWord(i, word)
-            #Add to category
-            selectedCategories = self.categories.getSelectedOptions()
-            for selected in selectedCategories:
-                for cat in self.user.categories:
-                    if cat.category == selected and self.tableRow.wordID not in cat.wordIDs:
-                        self.addWordToCategory(cat)
-            #Remove from category
-            notSelectedCategories = self.categories.getNotSelectedOptions()
-            for notSelected in notSelectedCategories:
-                for cat in self.user.categories:
-                    if cat.category == notSelected and self.tableRow.wordID in cat.wordIDs:
-                        self.removeWordFromCategory(cat)
+
+            labelText = self.categoriesListLabel['text']
+            for cat in self.user.categories:
+                if cat.category in labelText and self.tableRow.wordID not in cat.wordIDs:
+                    self.addWordToCategory(cat)
+                elif cat.category not in labelText and self.tableRow.wordID in cat.wordIDs:
+                    self.removeWordFromCategory(cat)
 
         self.root.destroy()
 
@@ -123,5 +133,14 @@ class ModifyEntryWindow:
         categoryObj.wordIDs.append(self.tableRow.wordID)
 
     def removeWordFromCategory(self, categoryObj):
-        self.user.database.deleteRow("Categories", ["category", "wordID", "user"], [categoryObj.category, self.tableRow.wordID, self.user.username])
+        self.user.database.deleteRow("Categories", ["category", "wordID", "username"], [categoryObj.category, self.tableRow.wordID, self.user.username])
         categoryObj.wordIDs.remove(self.tableRow.wordID)
+
+    def appendToCategories(self, item):
+        labelText = self.categoriesListLabel['text']
+        if item in labelText:
+            labelText = labelText.replace(item, '')
+            labelText = labelText.replace('  ', ' ')
+        else:
+            labelText = "%s %s" % (labelText, item)
+        self.categoriesListLabel.configure(text=labelText)

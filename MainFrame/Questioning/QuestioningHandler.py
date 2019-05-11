@@ -7,7 +7,7 @@ from MainFrame.Questioning import QuestioningFrame as qf
 from MainFrame.Questioning import QuestioningReportFrame as qrf
 
 
-class QuestioningFrame(Frame):
+class QuestioningHandlerFrame(Frame):
 
     def __init__(self, logobj, root, user):
         self.logObj = logobj
@@ -31,34 +31,37 @@ class QuestioningFrame(Frame):
         self.separator = ttk.Separator(self.topFrame, orient=HORIZONTAL)
         self.separator.grid(row=1, column=0, sticky="ew")
 
-        self.helpButton = Button(self.topFrame, text='?', font=("Helvetica", 11), anchor='e', relief=GROOVE, bg='white')
+        self.helpButton = Button(self.topFrame, text='? ', font=("Helvetica", 11), anchor='e', relief=GROOVE, bg='white', height=1, width=2)
         self.helpButton.bind('<Button-1>', lambda x: 'break')
         self.helpButton.bind('<Button-1>', lambda x: 'break')
         self.helpButton.bind('<Enter>', self.enter1)
         self.helpButton.bind('<Leave>', self.leave)
-        self.helpButton.grid(row=0, column=1, pady=(0,5), padx=(0,5), sticky=E)
+        self.helpButton.grid(row=0, column=1, pady=(0,16), padx=(957,5), sticky=S)
 
-        self.submitButton = Button(self, text="OK", width=10, command=self.startQuestioning, bg='white', activebackground='white', font=('Helvetica', 11))
+        self.submitButton = Button(self, text="Indítás", width=10, command=self.startQuestioning, bg='white', activebackground='white', font=('Helvetica', 11))
         self.submitButton.grid(row=3, sticky=E, padx=(0,115), pady=(10,0))
 
     def enter1(self, event=None):
-        self.enterMain()
+        self.enterMain(1)
         Label(self.topLevelWidget,
               text="Kategória: Válassza ki a kategóriákat, amiből szeretne kikérdezést indítani (alap helyzetben minden ki van választva)\n"
                    "Nyelv: Válassza ki a nyelveket, amelyeket szeretné, hogy megjelenjenek a kikérdezés során (alap helyzetben minden ki van választva)\n"
                    "Kezdő nyelv: Válassza ki a nyelvet, amiből le akarja fordítani a szavakat\n"
-                   "Modifikáció:\n - Normál: Maximum 15 kérdés\n - Könnyített: Maximum 10 kérdés\n - Nehezített: Maxmimum 30 kérdés, a kezdő nyelv nincs feltűntetve",
+                   "Nehézség:\n - Normál: Maximum 15 kérdés\n - Könnyített: Maximum 10 kérdés\n - Nehezített: Maxmimum 30 kérdés, a kezdő nyelv nincs feltűntetve",
               bg='white', font=("Helvetica", 11), relief=RIDGE, borderwidth=2, anchor='w').pack(fill=BOTH)
 
     def enter2(self, event=None):
-        self.enterMain()
+        self.enterMain(2)
         Label(self.topLevelWidget,
               text="Fordítsa le a szöveget, a szó alatt látható nyelvre.\nSegítségei nem töltődnek újra.",
               bg='white', font=("Helvetica", 11), relief=RIDGE, borderwidth=2, anchor='w').pack(fill=BOTH)
 
-    def enterMain(self):
+    def enterMain(self, enterCount):
         x, y, cx, cy = self.helpButton.bbox("insert")
-        x += self.helpButton.winfo_rootx() + 25
+        if enterCount == 1:
+            x += self.helpButton.winfo_rootx() - 830
+        else:
+            x += self.helpButton.winfo_rootx() - 285
         y += self.helpButton.winfo_rooty() + 20
         self.topLevelWidget = Toplevel(self.helpButton)
         self.topLevelWidget.wm_overrideredirect(True)
@@ -78,13 +81,18 @@ class QuestioningFrame(Frame):
             showerror("Hiba!", "Legalább két nyelvre és egy szóra szükség van a kikérdezéshez!")
             self.showedFrame.destroy()
             self.createQuestioningSetupFrame()
+        elif self.setupOptions.source in self.setupOptions.languages and len(self.setupOptions.languages) == 1:
+            showerror("Hiba!", "Nem lehet csak egy és ugyanazon nyelv a választottak között ami megegyezik a kezdőnyelvvel!")
+            self.showedFrame.destroy()
+            self.createQuestioningSetupFrame()
         else:
             self.topLabel.config(text='Kikérdezés')
             self.helpButton.bind('<Enter>', self.enter2)
+            self.helpButton.grid(row=0, column=1, pady=(0,16), padx=(901,5), sticky=S)
             self.showedFrame = qf.QuestioningFrame(self.logObj, self, self.setupOptions, self.user)
 
     def finishQuestioning(self):
-        self.showedFrame.destroy()
+        self.showedFrame.fullDestroy()
         self.topLabel.destroy()
         self.separator.destroy()
         self.topFrame.destroy()

@@ -16,6 +16,7 @@ class CategoriesFrame(Frame):
         self.pack(fill=BOTH, expand=1)
         self.frame = Frame(self, bg='white')
         self.frame.pack(fill=BOTH, expand=True)
+        self.categoryMainFrame = None
 
         self.tableRows = [None]
 
@@ -44,13 +45,17 @@ class CategoriesFrame(Frame):
     def refreshBottomFrame(self):
         try:
             self.categoryMainFrame.destroy()
-        except:
+        except AttributeError:
             pass
 
         cmfWidth = len(self.user.languages) * 22
         self.categoryMainFrame = Frame(self.botInnerFrame, bg='white')
         self.grid_propagate(0)
-        self.categoryMainFrame.grid(row=1, columnspan=len(self.user.languages), sticky='news')
+
+        try:
+            self.categoryMainFrame.grid(row=1, columnspan=len(self.user.languages), sticky='news')
+        except TclError:
+            self.categoryMainFrame.grid(row=1, sticky='news')
 
         self.canvas = Canvas(self.categoryMainFrame, bg='white')
         self.canvas.config(width=cmfWidth)
@@ -84,13 +89,14 @@ class CategoriesFrame(Frame):
         try:
             c = 0
             for wordID in wordIDs:
-                self.tableRows.append(DictionaryTableRow.TableRow(self.logObj, wordID, self.user, self.frameInCanvas, c, False))
+                self.tableRows.append(DictionaryTableRow.TableRow(self.logObj, wordID, self.user, self.frameInCanvas, self, c, False))
                 c = c + 1
         except TypeError:
             pass
 
     def addNewCategory(self):
         ac.AddCategory(self.logObj, self.user)
+        self.categoryDropdown.destroy()
         self.categoryDropdown = CategoryDropdown.CategoryDropdown(self.logObj, self.topFrame, self.user, self)
 
     def getWordIDsFromCategory(self, value):

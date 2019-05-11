@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+from tkinter import messagebox
 from GUIAssets import DictionaryTableRow as dtr
 from MainFrame.Dictionary.EntryModifications import AddDictionaryEntry as ade
 from MainFrame.Dictionary.LanguageModifications import AddLanguage as al
@@ -38,15 +39,15 @@ class DictionaryFrame(Frame):
     def setupHeader(self):
         Label(self.headerFrame, text='Szótár', bg='white', font=("Helvetica", 38), anchor='w').grid(row=0, column=0, pady=(0,5), padx=(5,0), sticky=W)
         ttk.Separator(self.headerFrame, orient=HORIZONTAL).grid(row=1, column=0, sticky="ew")
-        self.helpButton = Button(self.headerFrame, text='?', font=("Helvetica", 11), anchor='e', relief=GROOVE, bg='white')
+        self.helpButton = Button(self.headerFrame, text='? ', font=("Helvetica", 11), anchor='e', relief=GROOVE, bg='white', height=1, width=2)
         self.helpButton.bind('<Button-1>', lambda x: 'break')
         self.helpButton.bind('<Enter>', self.enter)
         self.helpButton.bind('<Leave>', self.leave)
-        self.helpButton.grid(row=0, column=1, pady=(0,5), padx=(1000,5), sticky=E)
+        self.helpButton.grid(row=0, column=1, pady=(0,5), padx=(1000,5))
 
     def enter(self, event=None):
         x, y, cx, cy = self.helpButton.bbox("insert")
-        x += self.helpButton.winfo_rootx() + 25
+        x += self.helpButton.winfo_rootx() - 500
         y += self.helpButton.winfo_rooty() + 20
         self.topLevelWidget = Toplevel(self.helpButton)
         self.topLevelWidget.wm_overrideredirect(True)
@@ -67,7 +68,7 @@ class DictionaryFrame(Frame):
         while i != (15 * (section+1)):
             rowNum = int(i % 15)
             if i < len(self.user.wordIDs):
-                self.tableRows[rowNum] = dtr.TableRow(self.logObj, self.user.wordIDs[i], self.user, self.topInnerFrame, rowNum + 1)
+                self.tableRows[rowNum] = dtr.TableRow(self.logObj, self.user.wordIDs[i], self.user, self.topInnerFrame, self, rowNum + 1)
             i += 1
 
     def createPageButtons(self):
@@ -85,10 +86,10 @@ class DictionaryFrame(Frame):
         self.addEntryButton = Button(self.botFrame, text="Új szó", command=self.addWord, bg='white', font=("Helvetica", 11), activebackground='white', width=10)
         self.addLanguageButton = Button(self.botFrame, text="Új nyelv", command=self.addLanguage, bg='white', font=("Helvetica", 11), activebackground='white', width=10)
 
-        self.prevButton.grid(row=0, column=2, sticky=S+E)
+        self.prevButton.grid(row=0, column=2, sticky=S+E, padx=(20,0))
         self.nextButton.grid(row=0, column=3, sticky=S+E)
         self.addEntryButton.grid(row=0, column=0, sticky=S+W)
-        self.addLanguageButton.grid(row=0, column=1, sticky=S+W)
+        self.addLanguageButton.grid(row=0, column=1, sticky=S+W, padx=(0,20))
 
     def changeDisplay(self, changeNum):
         if (changeNum == -1 and self.pageNumber == 0) or (changeNum == 1 and self.pageNumber == self.maxPageNumber):
@@ -99,8 +100,11 @@ class DictionaryFrame(Frame):
             self.displayTable(self.pageNumber)
 
     def addWord(self):
-        ADE = ade.AddEntry(self.logObj, self.user)
-        self.displayTable()
+        if len(self.user.languages) == 0:
+            messagebox.showerror("Hiba", "Előbb vegyen fel nyelvet, hogy hozzá tudjon adni szót!")
+        else:
+            ade.AddEntry(self.logObj, self.user)
+            self.displayTable()
 
     def addLanguage(self):
         AL = al.AddLanguage(self.logObj, self.user)

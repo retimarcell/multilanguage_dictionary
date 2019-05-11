@@ -1,6 +1,7 @@
 from tkinter import *
 from MainFrame.Questioning.Objects import Questions, Answer
 from GUIAssets import QuestionElement
+from tkinter import messagebox
 
 
 class QuestioningFrame(Frame):
@@ -19,6 +20,10 @@ class QuestioningFrame(Frame):
 
         self.amountOf = self.getAmount()
         self.questions = Questions.getQuestions(logObj, self.user, self.amountOf, self.options)
+        if len(self.questions) == 0:
+            messagebox.showerror("Hiba", "A beállításokhoz nincs kikérdezhető szó.")
+            self.destroy()
+            self.root.createQuestioningSetupFrame()
         self.currentQuestion = 0
         self.rightAnswers = 0
         self.questionObject = None
@@ -68,9 +73,9 @@ class QuestioningFrame(Frame):
         Label(self.rightFrame, text="Segítségek", font=("Helvetica", 14), bg='white').grid(row=3, sticky=W, pady=(20,0))
         self.fullWordHelpButton = self.setupHelpButton("FullWord", 4)
         self.startLetterHelpButton = self.setupHelpButton("StartLetter", 5)
-        self.skipHelpButton = self.setupHelpButton("Check", 6)
+        self.checkHelpButton = self.setupHelpButton("Check", 6)
 
-        self.helpButtons = [self.fullWordHelpButton, self.startLetterHelpButton, self.skipHelpButton]
+        self.helpButtons = [self.fullWordHelpButton, self.startLetterHelpButton, self.checkHelpButton]
 
     def setupHelpButton(self, hType, rowC):
         index = self.user.getHelpIndex(hType)
@@ -134,6 +139,7 @@ class QuestioningFrame(Frame):
     def setEntry(self, value):
         self.questionObject.entry.delete(0, END)
         self.questionObject.entry.insert(0, value)
+        self.questionObject.entry.configure(fg='#000000')
 
     def analyzeAnswer(self):
         givenAnswer = self.questionObject.getEntry()
@@ -148,7 +154,7 @@ class QuestioningFrame(Frame):
         self.user.lastAnswers = self.answers.copy()
         self.root.finishQuestioning()
 
-    def destroy(self):
+    def fullDestroy(self):
         self.leftFrame.destroy()
         self.rightFrame.destroy()
         self.destroy()

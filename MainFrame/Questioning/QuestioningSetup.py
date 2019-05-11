@@ -23,7 +23,7 @@ class QuestioningSetupFrame(Frame):
         self.categoryLabel = Label(self, text='Kategória: ', font=("Helvetica", 11), bg='white')
         self.languageFilterLabel = Label(self, text='Nyelv: ', font=("Helvetica", 11), bg='white')
         self.sourceLanguageLabel = Label(self, text='Kezdő nyelv: ', font=("Helvetica", 11), bg='white')
-        self.modeLabel = Label(self, text='Modifikáció: ', font=("Helvetica", 11), bg='white')
+        self.modeLabel = Label(self, text='Nehézség: ', font=("Helvetica", 11), bg='white')
 
         self.categoryLabel.grid(row=1, column=0, sticky=E, padx=(0,10), pady=(5,0))
         self.languageFilterLabel.grid(row=2, column=0, sticky=E, padx=(0,10), pady=(5,0))
